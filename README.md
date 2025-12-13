@@ -29,7 +29,7 @@ I am a Cloud Solutions Architect and Data Analyst with over 11 years of experien
 - CI/CD, Git, Docker
 
 ## Certifications
-- **Cloud Certification**: AWS Certified Solutions Architect – Associate (a certification that reflects my ability to design and deploy scalable, highly available, and cost-effective systems on AWS). 
+- **Cloud Certification**: AWS Certified Solutions Architect – Associate (a certification that reflects my ability to design and deploy scalable, secure, resilient, highly available, and cost-effective systems on AWS). 
 
 ## Enthusiasm & Approach
 I am deeply enthusiastic about cloud computing and continuously exploring the intersection of cloud architecture and Agentic AI. I believe that the future of scalable, intelligent systems lies in autonomous AI-driven solutions that can learn, adapt, and optimize themselves over time. My passion is in harnessing Agentic AI to create self-sustaining, secure, and cost-efficient cloud architectures that drive innovation and business transformation. I am committed to staying at the forefront of this rapidly evolving field, always eager to learn and apply the latest technologies to deliver impactful solutions.
