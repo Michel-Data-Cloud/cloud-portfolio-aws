@@ -5,22 +5,37 @@ My collection of AWS projects to showcase cloud architecture and hands-on experi
 I am a Cloud Solutions Architect and Data Analyst with over 11 years of experience in data analysis, primarily in the banking and consulting sectors. I have expertise in Python, SQL, and Hive, and I am passionate about leveraging these skills to solve complex business problems across industries. I am also an AWS Certified Solutions Architect – Associate with hands-on experience in cloud computing, automation, data science, and data analytics.
 
 ## Key Skills
-- **Cloud Architecture & Design**: AWS (IAM, VPC, CloudWatch, EC2, S3, Lambda, Glue, Athena, Redshift, DynamoDB, RDS, CloudFormation, Terraform, Docker, Kubernetes)
-- **Programming & Scripting**: Python, SQL, Hive, Bash
-- **Data Analysis and Automation**: Expertise in analyzing large datasets, building automated pipelines, and creating actionable insights.
-- **Data Science**: Familiar with data science techniques, machine learning, and data visualization.
-- **Consulting & Problem Solving**: Experienced in identifying and solving business challenges using technology and critical thinking.
-- **Communication**: Excellent written and verbal communication skills, with experience presenting complex ideas to both technical and non-technical stakeholders.
-- **Other**: CI/CD, Git, Docker
+
+#### Cloud Architecture & Design
+- **AWS Services**: IAM, VPC, CloudWatch, EC2, S3, Lambda, Glue, Athena, Redshift, DynamoDB, RDS, CloudFormation, Terraform
+- **Containerization**: Docker, Kubernetes
+
+#### Programming & Scripting
+- **Languages**: Python, SQL, Hive, Bash
+
+#### Data Analysis & Automation
+- Expertise in analyzing large datasets, building automated pipelines, and creating actionable insights.
+
+#### Data Science
+- Familiar with machine learning, data science techniques, and data visualization.
+
+#### Consulting & Problem Solving
+- Experienced in identifying and solving business challenges using cloud-based solutions and critical thinking. 
+
+#### Communication
+- Excellent written and verbal communication skills, with experience presenting complex ideas to both technical and non-technical stakeholders.
+
+#### Additional Skills
+- CI/CD, Git, Docker
 
 ## Certifications
-- **Cloud Certification**: AWS Certified Solutions Architect – Associate
+- **Cloud Certification**: AWS Certified Solutions Architect – Associate, a certification that reflects my ability to design and deploy scalable, highly available, and cost-effective systems on AWS. 
 
 ## Enthusiasm & Approach
-I am deeply enthusiastic about cloud computing and constantly seeking to learn and adapt to the evolving landscape of technology. I believe in the power of cloud solutions to create scalable, resilient, secure, and cost-efficient architectures that drive business growth. With a strong focus on continuous learning, I am committed to staying updated on emerging trends and technologies in cloud computing and data analytics.
+I am deeply enthusiastic about cloud computing and continuously exploring the intersection of cloud architecture and Agentic AI. I believe that the future of scalable, intelligent systems lies in autonomous AI-driven solutions that can learn, adapt, and optimize themselves over time. My passion is in harnessing Agentic AI to create self-sustaining, secure, and cost-efficient cloud architectures that drive innovation and business transformation. I am committed to staying at the forefront of this rapidly evolving field, always eager to learn and apply the latest technologies to deliver impactful solutions.
 
 ## My Goal: 
-I aim to leverage my skills in cloud architecture and data analytics to help businesses unlock their potential through technology. By building highly available, scalable, secure, resilient, and efficient cloud solutions, I strive to create value that aligns with business objectives and drives long-term success. 
+I aim to leverage my skills in cloud architecture and data analytics to help businesses drive digital transformation through technology. By building highly available, scalable, secure, resilient, and cost-efficient cloud solutions, I strive to create long-term value that aligns with business objectives and accelerates growth.
 
 ## Contact Info: 
 - GitHub: [https://github.com/Michel-Data-Cloud]
