@@ -8,7 +8,9 @@ I am a Cloud Solutions Architect and Data Analyst with over 11 years of experien
 
 #### Cloud Architecture & Design
 - **AWS Services**: IAM, VPC, CloudWatch, EC2, S3, Lambda, Glue, Athena, Redshift, DynamoDB, RDS, CloudFormation, Terraform
-- **Containerization**: Docker, Kubernetes
+
+#### Containerization & Orchestration
+- Docker, Kubernetes
 
 #### Programming & Scripting
 - **Languages**: Python, SQL, Hive, Bash
