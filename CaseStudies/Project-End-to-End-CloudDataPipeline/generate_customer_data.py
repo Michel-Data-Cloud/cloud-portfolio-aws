@@ -22,7 +22,8 @@ for customer in customers:
 
 # Save as JSON
 with open('customer_demographics.json', 'w') as f:
-    json.dump(customer_data, f, indent=2)
+    for record in customer_data:
+        f.write(json.dumps(record) + '\n')
 
 print(f"✅ Generated {len(customer_data)} customer records")
 print("Sample records:")
