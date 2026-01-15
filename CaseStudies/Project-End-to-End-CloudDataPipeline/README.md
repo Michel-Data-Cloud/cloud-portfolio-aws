@@ -20,7 +20,7 @@ Organizations need to transform raw transactional data into actionable business 
 ## 🏗️ Architecture
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
-│                          DATA PIPELINE FLOW                              │
+│                          DATA PIPELINE FLOW                             │
 └─────────────────────────────────────────────────────────────────────────┘
 
 ┌──────────────┐      ┌──────────────┐      ┌──────────────┐
@@ -33,14 +33,15 @@ Organizations need to transform raw transactional data into actionable business 
 └──────────────┘      └──────────────┘      └──────────────┘
                                                     │
                                                     ▼
-┌──────────────┐      ┌──────────────┐      ┌──────────────┐
-│   QUERY      │      │  PROCESSED   │      │  VISUALIZE   │
-│              │      │   DATA       │      │              │
-│  Amazon      │◀─────│  Parquet     │      │   Python     │
-│  Athena      │      │  Files       │      │  Matplotlib  │
-│  (SQL)       │      │              │      │  Seaborn     │
-│              │      │  Amazon S3   │      │              │
-└──────────────┘      └──────────────┘      └──────────────┘
+┌──────────────┐      ┌──────────────┐       ┌──────────────┐
+│  VISUALIZE   │      |    QUERY     |       |  PROCESSED   |
+│              │      |              |       |    DATA      |
+│   Python     │◀─────|   Amazon     | ◀─────|   Parquet    |
+│  Matplotlib  │      |   Athena     |       |    Files     |
+│   Seaborn    │      |    (SQL)     |       |              |
+│              │      |              |       |  Amazon S3   |
+└──────────────┘      └──────────────┘       └──────────────┘
+
 ```
 
 ---
