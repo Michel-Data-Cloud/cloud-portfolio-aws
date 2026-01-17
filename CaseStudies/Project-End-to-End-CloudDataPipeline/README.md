@@ -1,9 +1,17 @@
 # End-to-End AWS Data Pipeline
 
-> **A production-ready data engineering pipeline demonstrating ETL, data warehousing, and analytics on AWS**
+## TL;DR
+- End-to-end batch ETL pipeline on AWS
+- Glue + S3 + Athena + PySpark
+- 10K synthetic e-commerce transactions
+- Partitioned Parquet data lake
+- Cost-optimized (<$1/month)
+- SQL analytics + Python visualizations
+
+> **A production-inspired data engineering pipeline demonstrating ETL, data warehousing, and analytics on AWS**
 
 [![AWS](https://img.shields.io/badge/AWS-Cloud-orange)](https://aws.amazon.com/)
-[![Python](https://img.shields.io/badge/Python-3.14-blue)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/Python-3.10-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 ---
@@ -54,7 +62,7 @@ Organizations need to transform raw transactional data into actionable business 
 - **Optimized Storage**: Parquet columnar format with Snappy compression
 - **Partitioned Data**: Year/month partitioning for query performance
 - **Cost-Effective**: Serverless architecture with pay-per-use pricing
-- **Production-Ready**: Error handling, logging, and monitoring
+- **Production-inspired**: Error handling, logging, and monitoring
 - **SQL Analytics**: Standard SQL queries via Athena
 - **Data Visualization**: Python-generated professional charts
 
@@ -69,10 +77,10 @@ Organizations need to transform raw transactional data into actionable business 
 | **AWS Glue** | ETL & Data Catalog | Database, Crawler, ETL Job |
 | **Amazon Athena** | Serverless SQL queries | Configured with query results bucket |
 | **AWS IAM** | Security & permissions | Service role with S3/Glue access |
-| **Amazon CloudWatch** | Monitoring & logs | Job metrics and error tracking |
+| **Amazon CloudWatch** | Logging | Automatic Glue job logs (basic monitoring) |
 
 ### Programming & Tools
-- **Python 3.14** - Data generation, ETL logic, visualizations
+- **Python 3.10** - Data generation, ETL logic, visualizations
 - **PySpark** - Distributed data processing (180+ lines)
 - **SQL** - Data warehouse queries (12+ analytical queries)
 - **Pandas** - Data manipulation and analysis
@@ -267,7 +275,7 @@ aws s3 cp customer_demographics.json s3://yourname-raw-data-pipeline-project1/in
 ### Step 4: Set Up AWS Glue
 1. **Create IAM Role** for Glue:
    - Service: AWS Glue
-   - Policies: `AWSGlueServiceRole`, `AmazonS3FullAccess`
+   - Policies: `AWSGlueServiceRole`, `AmazonS3FullAccess`. Note: For simplicity, AmazonS3FullAccess was used. In production, this would be replaced with least-privilege bucket-level policies.
    - Name: `GlueServiceRole`
 
 2. **Create Glue Database**:
@@ -317,47 +325,47 @@ python create_visualizations.py
 
 ---
 
-## 📊 Sample Insights
+## 📊 Sample Visualizations
 
 ### Revenue by Region
 ![Revenue by Region](screenshots/01_revenue_by_region.png)
 
-**Finding**: North region generates 28% of total revenue, suggesting potential for increased investment in top-performing markets.
+**Purpose**: Identifies highest-performing geographic markets for resource allocation and expansion planning.
 
 ---
 
 ### Top Products
 ![Top Products](screenshots/02_top_products.png)
 
-**Finding**: Laptops and Monitors account for 45% of revenue despite representing only 25% of transactions, indicating high-value product focus.
+**Purpose**: Highlights best-selling products by revenue to inform inventory management and marketing strategy.
 
 ---
 
 ### Monthly Revenue Trend
 ![Monthly Trend](screenshots/03_monthly_trend.png)
 
-**Finding**: Peak sales in October with 31% increase over September, suggesting seasonal demand patterns.
+**Purpose**: Tracks sales performance over time to identify seasonal patterns and growth trends.
 
 ---
 
 ### Customer Tier Distribution
 ![Customer Tiers](screenshots/04_customer_tiers.png)
 
-**Finding**: Platinum members (12% of customers) contribute 34% of revenue, validating loyalty program ROI.
+**Purpose**: Analyzes revenue contribution by membership tier to measure loyalty program effectiveness.
 
 ---
 
 ### Age Group Analysis
 ![Age Analysis](screenshots/05_age_group_analysis.png)
 
-**Finding**: 26-35 age group shows highest spending per transaction, ideal target for premium product marketing.
+**Purpose**: Understands customer demographics and spending patterns for targeted marketing campaigns.
 
 ---
 
 ### Transaction Distribution
 ![Distribution](screenshots/06_transaction_distribution.png)
 
-**Finding**: Normal distribution with mean order value of $477, standard deviation of $289.
+**Purpose**: Statistical analysis of transaction amounts showing distribution pattern and key metrics displayed on chart.
 
 ---
 
@@ -367,13 +375,13 @@ python create_visualizations.py
 - ✅ Serverless architecture design
 - ✅ Data lake implementation (S3)
 - ✅ ETL pipeline development
-- ✅ Data warehousing (Athena)
+- ✅ Serverless analytics with Athena
 - ✅ Cost optimization strategies
 - ✅ Security best practices (IAM)
 
 ### Data Engineering
 - ✅ Large-scale data processing (PySpark)
-- ✅ Data modeling (star schema approach)
+- ✅ Data transformation and enrichment (joins, aggregations)
 - ✅ Schema evolution handling
 - ✅ Partitioning strategies
 - ✅ Data quality validation
@@ -391,6 +399,13 @@ python create_visualizations.py
 - ✅ Date type mismatch (Parquet BINARY vs Athena DATE)
 - ✅ Performance optimization (partitioning, compression)
 - ✅ Cost-conscious decision making
+
+---
+
+## Design Decisions & Tradeoffs
+- Glue vs Lambda: Chose Glue for scalable Spark transformations
+- Athena vs Redshift: Athena chosen for cost and serverless simplicity
+- Batch vs Streaming: Batch selected due to production-inspired business reporting latency requirements
 
 ---
 
@@ -423,9 +438,14 @@ python create_visualizations.py
 **Prevention**: Configure Glue to write Athena-compatible dates
 
 ### Issue 2: JSON Array Format
-**Problem**: Initial JSON as single array, Glue couldn't parse individual records  
-**Solution**: Converted to newline-delimited JSON (one object per line)  
-**Learning**: Always use NDJSON for Glue/Athena compatibility
+**Problem**: Initial JSON as single array `[{...}, {...}]`, Glue couldn't parse individual records  
+**Solution**: Converted to **newline-delimited JSON (NDJSON)** - one JSON object per line:
+```
+{"customer_id": "CUST0001", "age_group": "26-35"}
+{"customer_id": "CUST0002", "age_group": "18-25"}
+```  
+**Why NDJSON**: Industry standard for big data processing - each line is independently parseable  
+**Learning**: Always use NDJSON format for Glue/Athena/Spark compatibility
 
 ---
 
@@ -449,12 +469,6 @@ python create_visualizations.py
 📧 Email: quantumdatacloud@gmail.com  
 💼 LinkedIn: [linkedin.com/in/michel-hidalgo](https://www.linkedin.com/in/michel-hidalgo-46058921/)  
 🐙 GitHub: [github.com/Michel-Data-Cloud](https://github.com/Michel-Data-Cloud/cloud-portfolio-aws)
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
