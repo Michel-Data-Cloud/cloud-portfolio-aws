@@ -1,5 +1,13 @@
 # End-to-End AWS Data Pipeline
 
+> **A production-inspired data engineering pipeline demonstrating ETL, data warehousing, and analytics on AWS**
+
+[![AWS](https://img.shields.io/badge/AWS-Cloud-orange)](https://aws.amazon.com/)
+[![Python](https://img.shields.io/badge/Python-3.10-blue)](https://www.python.org/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
+---
+
 ## TL;DR
 - End-to-end batch ETL pipeline on AWS
 - Glue + S3 + Athena + PySpark
@@ -7,12 +15,6 @@
 - Partitioned Parquet data lake
 - Cost-optimized (<$1/month)
 - SQL analytics + Python visualizations
-
-> **A production-inspired data engineering pipeline demonstrating ETL, data warehousing, and analytics on AWS**
-
-[![AWS](https://img.shields.io/badge/AWS-Cloud-orange)](https://aws.amazon.com/)
-[![Python](https://img.shields.io/badge/Python-3.10-blue)](https://www.python.org/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 ---
 
