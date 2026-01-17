@@ -8,7 +8,7 @@
 
 ---
 
-## TL;DR
+## ⚡ TL;DR
 - End-to-end batch ETL pipeline on AWS
 - Glue + S3 + Athena + PySpark
 - 10K synthetic e-commerce transactions
