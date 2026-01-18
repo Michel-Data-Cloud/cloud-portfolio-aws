@@ -18,7 +18,7 @@
 | **S3 Requests** | 1,000 PUT/GET | $0.005/1000 | **$0.01** |
 | **Glue Crawler** | 1 run, 502 objects | $0.44/DPU-hour | **$0.00** (free tier) |
 | **Glue ETL Job** | 1 run, 2 workers, 5 min | $0.44/DPU-hour | **$0.07** |
-| **Athena Queries** | ~50 queries, 100 MB scanned | $5/TB | **$0.00** (free tier) |
+| **Athena Queries** | ~50 queries, 100 MB scanned | $5/TB | **$0.00** Negligible at this scale (<$0.01/month) |
 | **CloudWatch Logs** | 10 MB logs | $0.50/GB | **$0.00** (free tier) |
 | **Data Transfer** | Minimal (same region) | $0.09/GB | **$0.00** |
 | **IAM** | Role creation/management | Free | **$0.00** |
@@ -36,7 +36,7 @@
 | S3 Requests | 4,000/month | $0.02 |
 | Glue Crawler | 4 runs/month | $0.00 (free tier) |
 | Glue ETL Job | 4 runs/month × $0.07 | $0.28 |
-| Athena | 1 GB scanned/month | $0.00 (free tier) |
+| Athena | 1 GB scanned/month | $0.00 Negligible at this scale (<$0.01/month) |
 | CloudWatch | Basic metrics | $0.00 (free tier) |
 | **Total** | | **$0.30/month** |
 
@@ -57,14 +57,14 @@
 |---------|-------|--------------|
 | **S3 Storage** | 150 GB | $3.45 |
 | **S3 Requests** | 1M PUT, 100K GET | $5.50 |
-| **Glue Crawler** | 30 runs | $0.00 (under 1M objects) |
+| **Glue Crawler** | 30 runs | Covered by Glue free tier for this usage pattern |
 | **Glue ETL** | 30 runs × 10 workers × 15 min | $55.00 |
 | **Athena** | 500 GB scanned | $2.50 |
 | **CloudWatch** | 1 GB logs | $0.50 |
 | **Data Transfer** | Minimal (same region) | $0.00 |
 | **Total** | | **~$67/month** |
 
-**Cost per record**: $0.000067 (incredibly cost-effective!)
+**Cost per record**: $0.000067 (incredibly cost-effective)
 
 ---
 
@@ -169,7 +169,7 @@
 
 **Cost of analyst time** (at $50/hour): $490/month  
 **Pipeline cost**: $0.30/month  
-**Net savings**: $489.70/month (163,000% ROI!)
+**Net savings**: $489.70/month (Orders-of-magnitude ROI due to automation and low cloud costs)
 
 ### Business Value
 **Faster insights**:
