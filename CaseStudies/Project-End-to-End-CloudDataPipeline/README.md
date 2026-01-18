@@ -30,12 +30,12 @@ Organizations need to transform raw transactional data into actionable business 
 ## 🏗️ Architecture
 ```mermaid
 graph TD
-    A["RAW DATACSV FilesJSON FilesAmazon S3"]
-    B["CATALOGAWS Glue CrawlerSchema DiscoveryData Catalog"]
-    C["ETL TRANSFORMAWS Glue JobPySpark ProcessingJoin & Aggregate"]
-    D["PROCESSED DATAParquet FilesYear/Month PartitionsAmazon S3"]
-    E["QUERYAmazon AthenaSQL AnalyticsServerless"]
-    F["VISUALIZEPython ScriptsMatplotlib & Seaborn6 Professional Charts"]
+    A["RAW DATA CSV Files JSON Files Amazon S3"]
+    B["CATALOG AWS Glue Crawler Schema Discovery Data Catalog"]
+    C["ETL TRANSFORM AWS Glue Job PySpark Processing Join & Aggregate"]
+    D["PROCESSED DATA Parquet Files Year/Month Partitions Amazon S3"]
+    E["QUERY Amazon Athena SQL Analytics Serverless"]
+    F["VISUALIZE Python Scripts Matplotlib & Seaborn Professional Charts"]
     
     A --> B
     B --> C
