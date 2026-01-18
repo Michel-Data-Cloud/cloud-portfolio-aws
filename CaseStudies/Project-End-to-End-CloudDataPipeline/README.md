@@ -3,7 +3,7 @@
 > **A production-inspired data engineering pipeline demonstrating ETL, data warehousing, and analytics on AWS**
 
 [![AWS](https://img.shields.io/badge/AWS-Cloud-orange)](https://aws.amazon.com/)
-[![Python](https://img.shields.io/badge/Python-3.10-blue)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/Python-3.14-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 ---
@@ -28,30 +28,22 @@ Organizations need to transform raw transactional data into actionable business 
 ---
 
 ## 🏗️ Architecture
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                          DATA PIPELINE FLOW                             │
-└─────────────────────────────────────────────────────────────────────────┘
-
-┌──────────────┐      ┌──────────────┐      ┌──────────────┐
-│   RAW DATA   │      │   CATALOG    │      │     ETL      │
-│              │      │              │      │              │
-│  CSV Files   │─────▶│  AWS Glue    │─────▶│  AWS Glue    │
-│  JSON Files  │      │  Crawler     │      │  ETL Job     │
-│              │      │              │      │  (PySpark)   │
-│  Amazon S3   │      │ Data Catalog │      │              │
-└──────────────┘      └──────────────┘      └──────────────┘
-                                                    │
-                                                    ▼
-┌──────────────┐      ┌──────────────┐       ┌──────────────┐
-│  VISUALIZE   │      |    QUERY     |       |  PROCESSED   |
-│              │      |              |       |    DATA      |
-│   Python     │◀─────|   Amazon     | ◀─────|   Parquet    |
-│  Matplotlib  │      |   Athena     |       |    Files     |
-│   Seaborn    │      |    (SQL)     |       |              |
-│              │      |              |       |  Amazon S3   |
-└──────────────┘      └──────────────┘       └──────────────┘
-
+```mermaid
+graph LR
+    A["📦 Raw DataCSV & JSON FilesAmazon S3"] --> B["🔍 CatalogSchema DiscoveryAWS Glue Crawler"]
+    B --> C["⚙️ TransformPySpark ETLAWS Glue Job"]
+    C --> D["💾 Processed DataParquet FilesAmazon S3"]
+    D --> E["🔎 QuerySQL AnalyticsAmazon Athena"]
+    E --> F["📊 VisualizeCharts & InsightsPython"]
+    
+    style A fill:#FF9900,stroke:#232F3E,stroke-width:3px,color:#fff
+    style B fill:#945DF2,stroke:#232F3E,stroke-width:3px,color:#fff
+    style C fill:#945DF2,stroke:#232F3E,stroke-width:3px,color:#fff
+    style D fill:#FF9900,stroke:#232F3E,stroke-width:3px,color:#fff
+    style E fill:#3B48CC,stroke:#232F3E,stroke-width:3px,color:#fff
+    style F fill:#3776AB,stroke:#232F3E,stroke-width:3px,color:#fff
+    
+    classDef default font-size:14px,font-weight:bold
 ```
 
 ---
@@ -82,7 +74,7 @@ Organizations need to transform raw transactional data into actionable business 
 | **Amazon CloudWatch** | Logging | Automatic Glue job logs (basic monitoring) |
 
 ### Programming & Tools
-- **Python 3.10** - Data generation, ETL logic, visualizations
+- **Python 3.14** - Data generation, ETL logic, visualizations
 - **PySpark** - Distributed data processing (180+ lines)
 - **SQL** - Data warehouse queries (12+ analytical queries)
 - **Pandas** - Data manipulation and analysis
@@ -235,7 +227,7 @@ s3://michel-processed-data-pipeline-project1/enriched/
 ### Prerequisites
 - AWS Account with admin access
 - AWS CLI configured (`aws configure`)
-- Python 3.8+ installed
+- Python 3.10+ installed
 - Git installed
 
 ### Step 1: Clone Repository
