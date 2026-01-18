@@ -81,7 +81,7 @@ graph TD
 ### Programming & Tools
 - **Python 3.14** - Data generation, ETL logic, visualizations
 - **PySpark** - Distributed data processing (180+ lines)
-- **SQL** - Data warehouse queries (12+ analytical queries)
+- **SQL** - Data warehouse queries (10+ analytical queries)
 - **Pandas** - Data manipulation and analysis
 - **Matplotlib/Seaborn** - Statistical visualizations
 - **boto3** - AWS SDK for Python

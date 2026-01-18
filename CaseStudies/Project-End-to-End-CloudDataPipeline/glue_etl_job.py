@@ -1,8 +1,8 @@
 """
 AWS Glue ETL Job - Sales Data Pipeline
 Purpose: Transform raw sales and customer data into analytics-ready datasets
-Author: Jack
-Date: December 2025
+Author: Michel Hidalgo
+Date: January 2026
 
 This script:
 1. Reads raw sales (CSV) and customer (JSON) data from Glue Data Catalog
@@ -152,7 +152,7 @@ job.commit()
 """
 OUTPUT STRUCTURE IN S3:
 
-jack-processed-data-pipeline-project1/
+michel-processed-data-pipeline-project1/
 ├── enriched/                           (Full detailed data)
 │   ├── year=2025/
 │   │   ├── month=9/

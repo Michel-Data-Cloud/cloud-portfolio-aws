@@ -2,7 +2,7 @@
 -- ATHENA SQL QUERIES - DATA WAREHOUSE ANALYSIS
 -- Project: End-to-End AWS Data Pipeline
 -- Author: Michel Hidalgo 
--- Date: December 2025
+-- Date: January 2026
 -- ============================================
 
 -- This file contains SQL queries for analyzing processed sales data in AWS Athena

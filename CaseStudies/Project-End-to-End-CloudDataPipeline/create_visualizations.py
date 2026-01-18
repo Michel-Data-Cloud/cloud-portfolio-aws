@@ -1,8 +1,8 @@
 """
 Data Visualization Script - AWS Data Pipeline Project
 Purpose: Generate professional charts from Athena query results
-Author: Jack
-Date: December 2025
+Author: Michel Hidalgo
+Date: January 2026
 
 This script:
 1. Connects to AWS Athena using boto3
@@ -391,6 +391,7 @@ print("  1. Review the generated charts")
 print("  2. Add them to your GitHub README")
 print("  3. Update project documentation")
 print("\n✅ Python visualization complete!")
+
 
 
 
