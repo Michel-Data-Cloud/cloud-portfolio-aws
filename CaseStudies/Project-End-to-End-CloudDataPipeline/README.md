@@ -29,21 +29,26 @@ Organizations need to transform raw transactional data into actionable business 
 
 ## 🏗️ Architecture
 ```mermaid
-graph LR
-    A["📦 Raw DataCSV & JSON FilesAmazon S3"] --> B["🔍 CatalogSchema DiscoveryAWS Glue Crawler"]
-    B --> C["⚙️ TransformPySpark ETLAWS Glue Job"]
-    C --> D["💾 Processed DataParquet FilesAmazon S3"]
-    D --> E["🔎 QuerySQL AnalyticsAmazon Athena"]
-    E --> F["📊 VisualizeCharts & InsightsPython"]
+graph TD
+    A["RAW DATACSV FilesJSON FilesAmazon S3"]
+    B["CATALOGAWS Glue CrawlerSchema DiscoveryData Catalog"]
+    C["ETL TRANSFORMAWS Glue JobPySpark ProcessingJoin & Aggregate"]
+    D["PROCESSED DATAParquet FilesYear/Month PartitionsAmazon S3"]
+    E["QUERYAmazon AthenaSQL AnalyticsServerless"]
+    F["VISUALIZEPython ScriptsMatplotlib & Seaborn6 Professional Charts"]
     
-    style A fill:#FF9900,stroke:#232F3E,stroke-width:3px,color:#fff
-    style B fill:#945DF2,stroke:#232F3E,stroke-width:3px,color:#fff
-    style C fill:#945DF2,stroke:#232F3E,stroke-width:3px,color:#fff
-    style D fill:#FF9900,stroke:#232F3E,stroke-width:3px,color:#fff
-    style E fill:#3B48CC,stroke:#232F3E,stroke-width:3px,color:#fff
-    style F fill:#3776AB,stroke:#232F3E,stroke-width:3px,color:#fff
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
     
-    classDef default font-size:14px,font-weight:bold
+    style A fill:#FF9900,stroke:#232F3E,stroke-width:4px,color:#FFFFFF,font-size:16px
+    style B fill:#945DF2,stroke:#232F3E,stroke-width:4px,color:#FFFFFF,font-size:16px
+    style C fill:#945DF2,stroke:#232F3E,stroke-width:4px,color:#FFFFFF,font-size:16px
+    style D fill:#FF9900,stroke:#232F3E,stroke-width:4px,color:#FFFFFF,font-size:16px
+    style E fill:#3B48CC,stroke:#232F3E,stroke-width:4px,color:#FFFFFF,font-size:16px
+    style F fill:#3776AB,stroke:#232F3E,stroke-width:4px,color:#FFFFFF,font-size:16px
 ```
 
 ---
