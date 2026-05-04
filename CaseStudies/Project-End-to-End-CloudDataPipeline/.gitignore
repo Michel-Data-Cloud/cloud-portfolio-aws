@@ -1,41 +1,85 @@
-# Virtual Environment
-venv/
-env/
-ENV/
-
-# Python
+# ========================================
+# Python 
+# ========================================
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
-*.egg
-*.egg-info/
-dist/
+.Python
 build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
 
+# Virtual Environments
+venv/
+env/
+ENV/
+.venv
+
+# Pytest
+.pytest_cache/
+.cache/
+htmlcov/
+.coverage
+.coverage.*
+*.cover
+.hypothesis/
+
+# ========================================
+# Terraform
+# ========================================
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+.terraform/
+.terraform.lock.hcl
+terraform.tfvars
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+crash.log
+crash.*.log
+
+# ========================================
 # AWS
-.aws/
+# ========================================
 *.pem
-credentials
+*.key
+.aws/
 
-# Data files
-data/*.csv
-data/*.json
-*.parquet
-
-# OS
-.DS_Store
-.DS_Store?
-._*
-
-# IDE
+# ========================================
+# IDE / Editor
+# ========================================
 .vscode/
 .idea/
+*.swp
+*.swo
+*~
+*.code-workspace
 
-# Jupyter Notebook
-.ipynb_checkpoints
+# ========================================
+# OS
+# ========================================
+.DS_Store
+Thumbs.db
+*.bak
 
-# Environment variables
-.env
-sales_data.csv
-customer_demographics.json
+# ========================================
+# Project-Specific
+# ========================================
+project-structure.txt
+test_reports/
