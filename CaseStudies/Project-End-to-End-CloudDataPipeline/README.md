@@ -67,7 +67,7 @@ graph TD
 
 ---
 
-## 🚀 Recent Enhancements (January 2026)
+## 🚀 Recent Enhancements (May 2026)
 
 This project has been enhanced with production-grade DevOps practices:
 
@@ -78,7 +78,7 @@ This project has been enhanced with production-grade DevOps practices:
 - **Version-controlled infrastructure** - All AWS resources defined in code
 
 **Key Terraform Resources:**
-- 4 S3 buckets with encryption
+- 5 S3 buckets with encryption (raw, processed, scripts, Athena results, Glue assets)
 - Glue database, crawler, and ETL job
 - IAM roles & Policies
 
@@ -101,7 +101,7 @@ This project has been enhanced with production-grade DevOps practices:
 
 ## 📊 Before & After Comparison
 
-| Aspect | Before (December 2025) | After (January 2026) |
+| Aspect | Before (December 2025) | After (May 2026) |
 |--------|------------------------|----------------------|
 | **Infrastructure** | Manual AWS Console setup | Terraform IaC - reproducible in minutes |
 | **Deployment Time** | 2-3 hours manual clicking | 5 minutes automated |
@@ -116,7 +116,7 @@ This project has been enhanced with production-grade DevOps practices:
 ### AWS Services
 | Service | Purpose | Configuration |
 |---------|---------|---------------|
-| **Amazon S3** | Data lake storage | 3 buckets (raw, processed, scripts) |
+| **Amazon S3** | Data lake storage | 5 buckets (raw, processed, scripts, Athena results, Glue assets) |
 | **AWS Glue** | ETL & Data Catalog | Database, Crawler, ETL Job |
 | **Amazon Athena** | Serverless SQL queries | Configured with query results bucket |
 | **AWS IAM** | Security & permissions | Service role with S3/Glue access |
@@ -136,12 +136,15 @@ This project has been enhanced with production-grade DevOps practices:
 ## 📂 Project Structure
 ```
 Project-End-to-End-CloudDataPipeline/
-├── generate_sample_data.py          # Creates synthetic sales data (10,000 records)
-├── generate_customer_data.py        # Creates customer demographics (500 customers)
-├── glue_etl_job.py                  # PySpark ETL transformation script
-├── create_visualizations.py         # Python charts from Athena queries
-├── athena_queries.sql               # SQL analytical queries
-├── requirements.txt                 # Python dependencies
+├── terraform/                       # Infrastructure as Code (NEW)
+│   ├── main.tf                      # Complete infrastructure definition
+│   ├── variables.tf                 # Variable definitions
+│   ├── outputs.tf                   # Output definitions
+│   └── .gitignore                   # Terraform-specific ignores
+├── tests/                           # Data quality tests (NEW)
+│   ├── test_data_quality.py         # Comprehensive validation tests
+│   └── unit/
+│       └── test_data_generation.py  # Unit tests for data generation
 ├── screenshots/                     # Generated visualizations (6 charts)
 │   ├── 01_revenue_by_region.png
 │   ├── 02_top_products.png
@@ -149,6 +152,15 @@ Project-End-to-End-CloudDataPipeline/
 │   ├── 04_customer_tiers.png
 │   ├── 05_age_group_analysis.png
 │   └── 06_transaction_distribution.png
+├── generate_sample_data.py          # Creates synthetic sales data (10,000 records)
+├── generate_customer_data.py        # Creates customer demographics (500 customers)
+├── glue_etl_job.py                  # PySpark ETL transformation script
+├── create_visualizations.py         # Python charts from Athena queries
+├── athena_queries.sql               # SQL analytical queries
+├── pytest.ini                       # Pytest configuration
+├── requirements.txt                 # Python dependencies
+├── COST_ANALYSIS.md                 # Detailed cost breakdown
+├── .gitignore                       # Git ignore rules
 └── README.md                        # This file
 ```
 
@@ -178,7 +190,7 @@ s3://michel-raw-data-pipeline-project1/input/
 
 - **Automatic schema detection** from S3 files
 - **Created tables**: `sales_data_csv`, `customer_demographics_json`
-- **Database**: `sales_analytics_db`
+- **Database**: `project1_sales_analytics_db` (processed data catalog) and `project1_sales_pipeline_db_december2025` (raw data catalog)
 
 ### 4. ETL Transformation
 **Service**: AWS Glue ETL Job (PySpark)
@@ -284,6 +296,33 @@ s3://michel-processed-data-pipeline-project1/enriched/
 git clone https://github.com/Michel-Data-Cloud/cloud-portfolio-aws.git
 cd cloud-portfolio-aws/CaseStudies/Project-End-to-End-CloudDataPipeline
 ```
+
+### Option A: Deploy with Terraform (Recommended) ⭐
+
+**Prerequisites:**
+- Terraform installed (`brew install terraform` on Mac)
+- AWS CLI configured
+
+**Steps:**
+```bash
+# 1. Navigate to terraform folder
+cd terraform/
+
+# 2. Initialize Terraform
+terraform init
+
+# 3. Review what will be created
+terraform plan
+
+# 4. Deploy infrastructure (if starting from scratch)
+terraform apply
+
+# Note: If resources already exist, this serves as documentation
+```
+
+### Option B: Manual Setup (Original Method)
+
+**Follow steps 3-6 below for manual AWS Console setup...**
 
 ### Step 2: Set Up Python Environment
 ```bash
@@ -461,8 +500,8 @@ python create_visualizations.py
 ## 🔄 Future Enhancements
 
 ### Short-term (1-2 weeks)
-- [ ] Infrastructure as Code (CloudFormation/Terraform)
-- [ ] Automated testing (data quality checks)
+- [ ] Infrastructure as Code (CloudFormation/Terraform) COMPLETED!
+- [ ] Automated testing (data quality checks) COMPLETED! 
 - [ ] CI/CD pipeline (GitHub Actions)
 
 ### Medium-term (1 month)
@@ -531,5 +570,5 @@ python create_visualizations.py
 
 **Built with ❤️ to demonstrate cloud data engineering expertise**
 
-*Last updated: January 2025*
+*Last updated: May 2025*
 
