@@ -18,8 +18,6 @@
 
 ---
 
----
-
 ## 💼 Business Value & Impact
 
 ### **Quantifiable Business Outcomes**
@@ -164,8 +162,6 @@ This project has been enhanced with production-grade DevOps practices:
 **Known Issues** (tracked for continuous improvement):
 - 499 records with NULL total_amount values (4.99% of data) - data generation script enhancement needed
 - Summary aggregations show 2x expected values - resolved by clearing processed bucket before ETL runs
-
----
 
 ---
 
@@ -387,7 +383,7 @@ s3://michel-processed-data-pipeline-project1/enriched/
 | **Traditional (EC2 + RDS)** | $50-80 | $600-960 | ❌ 50-80x more expensive |
 | **Redshift Data Warehouse** | $180+ | $2,160+ | ❌ 180x more expensive |
 
-**ROI Summary:**
+### **ROI Summary:**
 - **Annual Savings vs Traditional:** $2,100+ (98% cost reduction)
 - **Annual Savings vs Redshift:** $2,148+ (99% cost reduction)
 - **Payback Period:** Immediate - no upfront infrastructure investment
@@ -407,11 +403,11 @@ s3://michel-processed-data-pipeline-project1/enriched/
 - **Business value:** Supports 100x revenue growth without infrastructure redesign or prohibitive costs
 
 ### Cost Optimization Decisions
-✅ **Used Parquet** instead of CSV (10x compression = 90% less Athena scanning cost)
-✅ **Partitioned by date** (queries scan only relevant data = 90% cost reduction on analytics)
-✅ **2 Glue workers** (minimum for Spark, right-sized for workload)
-✅ **Serverless architecture** (zero idle costs - pay only for execution time)
-✅ **S3 Lifecycle policies** (automated archival to Glacier for historical data - future enhancement)
+- ✅ **Used Parquet** instead of CSV (10x compression = 90% less Athena scanning cost)
+- ✅ **Partitioned by date** (queries scan only relevant data = 90% cost reduction on analytics)
+- ✅ **2 Glue workers** (minimum for Spark, right-sized for workload)
+- ✅ **Serverless architecture** (zero idle costs - pay only for execution time)
+- ✅ **S3 Lifecycle policies** (automated archival to Glacier for historical data - future enhancement)
 
 ---
 
