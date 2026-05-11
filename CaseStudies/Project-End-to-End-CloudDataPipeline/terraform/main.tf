@@ -6,7 +6,7 @@
 #
 # Purpose: Documentation, disaster recovery, and reference baseline
 # Created: December 2025
-# Documented: February 2026
+# Documented: May 2026
 ################################################################################
 
 terraform {
@@ -17,7 +17,7 @@ terraform {
       version = "~> 5.0"
     }
   }
-  
+
   # S3 Backend - Store Terraform state in S3
   backend "s3" {
     bucket  = "michel-terraform-state-pipeline"
@@ -86,6 +86,15 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "processed_data" {
   }
 }
 
+# Enable versioning for processed data bucket (disaster recovery)
+resource "aws_s3_bucket_versioning" "processed_data" {
+  bucket = aws_s3_bucket.processed_data.id
+
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
 # Bucket 3: Glue Scripts Storage
 # Purpose: Store ETL job scripts
 resource "aws_s3_bucket" "glue_scripts" {
@@ -104,6 +113,15 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "glue_scripts" {
     apply_server_side_encryption_by_default {
       sse_algorithm = "AES256"
     }
+  }
+}
+
+# Enable versioning for scripts bucket (disaster recovery)
+resource "aws_s3_bucket_versioning" "glue_scripts" {
+  bucket = aws_s3_bucket.glue_scripts.id
+
+  versioning_configuration {
+    status = "Enabled"
   }
 }
 
@@ -152,6 +170,124 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "glue_assets" {
 }
 
 ################################################################################
+# S3 BUCKET POLICIES: ENFORCE ENCRYPTION AND HTTPS
+################################################################################
+
+# Bucket Policy: Enforce encryption and HTTPS for raw data bucket
+resource "aws_s3_bucket_policy" "raw_data" {
+  bucket = aws_s3_bucket.raw_data.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid       = "DenyUnencryptedObjectUploads"
+        Effect    = "Deny"
+        Principal = "*"
+        Action    = "s3:PutObject"
+        Resource  = "${aws_s3_bucket.raw_data.arn}/*"
+        Condition = {
+          StringNotEquals = {
+            "s3:x-amz-server-side-encryption" = "AES256"
+          }
+        }
+      },
+      {
+        Sid       = "DenyInsecureTransport"
+        Effect    = "Deny"
+        Principal = "*"
+        Action    = "s3:*"
+        Resource = [
+          aws_s3_bucket.raw_data.arn,
+          "${aws_s3_bucket.raw_data.arn}/*"
+        ]
+        Condition = {
+          Bool = {
+            "aws:SecureTransport" = "false"
+          }
+        }
+      }
+    ]
+  })
+}
+
+# Bucket Policy: Enforce encryption and HTTPS for processed data bucket
+resource "aws_s3_bucket_policy" "processed_data" {
+  bucket = aws_s3_bucket.processed_data.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid       = "DenyUnencryptedObjectUploads"
+        Effect    = "Deny"
+        Principal = "*"
+        Action    = "s3:PutObject"
+        Resource  = "${aws_s3_bucket.processed_data.arn}/*"
+        Condition = {
+          StringNotEquals = {
+            "s3:x-amz-server-side-encryption" = "AES256"
+          }
+        }
+      },
+      {
+        Sid       = "DenyInsecureTransport"
+        Effect    = "Deny"
+        Principal = "*"
+        Action    = "s3:*"
+        Resource = [
+          aws_s3_bucket.processed_data.arn,
+          "${aws_s3_bucket.processed_data.arn}/*"
+        ]
+        Condition = {
+          Bool = {
+            "aws:SecureTransport" = "false"
+          }
+        }
+      }
+    ]
+  })
+}
+
+# Bucket Policy: Enforce encryption and HTTPS for scripts bucket
+resource "aws_s3_bucket_policy" "glue_scripts" {
+  bucket = aws_s3_bucket.glue_scripts.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid       = "DenyUnencryptedObjectUploads"
+        Effect    = "Deny"
+        Principal = "*"
+        Action    = "s3:PutObject"
+        Resource  = "${aws_s3_bucket.glue_scripts.arn}/*"
+        Condition = {
+          StringNotEquals = {
+            "s3:x-amz-server-side-encryption" = "AES256"
+          }
+        }
+      },
+      {
+        Sid       = "DenyInsecureTransport"
+        Effect    = "Deny"
+        Principal = "*"
+        Action    = "s3:*"
+        Resource = [
+          aws_s3_bucket.glue_scripts.arn,
+          "${aws_s3_bucket.glue_scripts.arn}/*"
+        ]
+        Condition = {
+          Bool = {
+            "aws:SecureTransport" = "false"
+          }
+        }
+      }
+    ]
+  })
+}
+
+################################################################################
 # IAM ROLE FOR GLUE
 ################################################################################
 
@@ -185,11 +321,51 @@ resource "aws_iam_role_policy_attachment" "glue_service_role_policy" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole"
 }
 
-# Attach AWS managed policy: AmazonS3FullAccess
-# Note: For production, this should be replaced with least-privilege bucket-level policies
-resource "aws_iam_role_policy_attachment" "glue_s3_access" {
-  role       = aws_iam_role.glue_service_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+################################################################################
+# IAM POLICY: LEAST-PRIVILEGE S3 ACCESS
+################################################################################
+
+# Custom IAM policy: Grant Glue access ONLY to pipeline-specific buckets
+resource "aws_iam_role_policy" "glue_s3_least_privilege" {
+  name = "glue-pipeline-s3-access"
+  role = aws_iam_role.glue_service_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "AllowListSpecificBuckets"
+        Effect = "Allow"
+        Action = [
+          "s3:ListBucket",
+          "s3:GetBucketLocation"
+        ]
+        Resource = [
+          aws_s3_bucket.raw_data.arn,
+          aws_s3_bucket.processed_data.arn,
+          aws_s3_bucket.glue_scripts.arn,
+          aws_s3_bucket.athena_results.arn,
+          aws_s3_bucket.glue_assets.arn
+        ]
+      },
+      {
+        Sid    = "AllowReadWriteSpecificBuckets"
+        Effect = "Allow"
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject"
+        ]
+        Resource = [
+          "${aws_s3_bucket.raw_data.arn}/*",
+          "${aws_s3_bucket.processed_data.arn}/*",
+          "${aws_s3_bucket.glue_scripts.arn}/*",
+          "${aws_s3_bucket.athena_results.arn}/*",
+          "${aws_s3_bucket.glue_assets.arn}/*"
+        ]
+      }
+    ]
+  })
 }
 
 ################################################################################
@@ -252,8 +428,8 @@ resource "aws_glue_crawler" "sales_data_crawler" {
   }
 
   configuration = jsonencode({
-    Version                = 1.0
-    CreatePartitionIndex   = true
+    Version              = 1.0
+    CreatePartitionIndex = true
   })
 
   tags = {
@@ -285,11 +461,11 @@ resource "aws_glue_catalog_table" "enriched_sales" {
   table_type = "EXTERNAL_TABLE"
 
   parameters = {
-    "classification"         = "parquet"
-    "compressionType"        = "snappy"
-    "typeOfData"            = "file"
-    "EXTERNAL"              = "TRUE"
-    "parquet.compression"   = "SNAPPY"
+    "classification"      = "parquet"
+    "compressionType"     = "snappy"
+    "typeOfData"          = "file"
+    "EXTERNAL"            = "TRUE"
+    "parquet.compression" = "SNAPPY"
   }
 
   storage_descriptor {
@@ -393,11 +569,11 @@ resource "aws_glue_catalog_table" "sales_summary" {
   table_type = "EXTERNAL_TABLE"
 
   parameters = {
-    "classification"         = "parquet"
-    "compressionType"        = "snappy"
-    "typeOfData"            = "file"
-    "EXTERNAL"              = "TRUE"
-    "parquet.compression"   = "SNAPPY"
+    "classification"      = "parquet"
+    "compressionType"     = "snappy"
+    "typeOfData"          = "file"
+    "EXTERNAL"            = "TRUE"
+    "parquet.compression" = "SNAPPY"
   }
 
   storage_descriptor {
