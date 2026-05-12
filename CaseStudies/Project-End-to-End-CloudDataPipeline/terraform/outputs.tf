@@ -133,13 +133,13 @@ output "sales_summary_table" {
 output "infrastructure_summary" {
   description = "Summary of the December 2025 baseline infrastructure"
   value = {
-    region                = var.aws_region
-    s3_buckets            = 5
-    glue_databases        = 2
-    glue_crawlers         = 1
-    glue_jobs             = 1
-    glue_tables_defined   = 2
-    iam_roles             = 1
-    baseline_date         = var.baseline_date
+    region              = var.aws_region
+    s3_buckets          = 5
+    glue_databases      = 2
+    glue_crawlers       = 1
+    glue_jobs           = 1
+    glue_tables_defined = 2
+    iam_roles           = 1
+    baseline_date       = var.baseline_date
   }
 }
