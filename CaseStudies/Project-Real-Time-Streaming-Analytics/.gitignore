@@ -1,0 +1,138 @@
+# =============================================================================
+# .gitignore — Real-Time Streaming Analytics
+# =============================================================================
+# This file tells Git which files and folders to NEVER upload to GitHub.
+# One file at the project root protects the entire project.
+# =============================================================================
+
+
+# -----------------------------------------------------------------------------
+# TERRAFORM — Critical: these files must never go to GitHub
+# -----------------------------------------------------------------------------
+
+# State files — contain real ARNs, resource IDs, and account information
+terraform.tfstate
+terraform.tfstate.backup
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+
+# Variable values — may contain email addresses or other personal config
+# The .example version IS committed (it is a safe public template)
+terraform.tfvars
+
+# Terraform working directory — downloaded provider binaries (~100MB+)
+# Recreated automatically by: terraform init
+.terraform/
+.terraform.lock.hcl
+
+# Terraform crash logs
+crash.log
+crash.*.log
+
+# Override files — local development overrides, not for sharing
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+
+# -----------------------------------------------------------------------------
+# LAMBDA — Auto-generated deployment packages
+# -----------------------------------------------------------------------------
+
+# Zip files created by Terraform's archive_file data source
+# These are generated artifacts, not source code
+lambda/*.zip
+lambda/**/*.zip
+*.zip
+
+
+# -----------------------------------------------------------------------------
+# PYTHON — Compiled and cache files
+# -----------------------------------------------------------------------------
+
+# Compiled Python files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Virtual environments — if you create one locally
+.env
+*.env
+.venv
+env/
+venv/
+ENV/
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+
+# -----------------------------------------------------------------------------
+# OPERATING SYSTEM — Files created by Mac/Windows/Linux automatically
+# -----------------------------------------------------------------------------
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+*~
+
+
+# -----------------------------------------------------------------------------
+# VS CODE — Editor-specific files
+# -----------------------------------------------------------------------------
+
+# VS Code workspace settings (personal preferences, not project config)
+.vscode/
+*.code-workspace
+
+
+# -----------------------------------------------------------------------------
+# AWS — Credentials and sensitive config
+# IMPORTANT: Your AWS credentials should ONLY ever live in:
+# ~/.aws/credentials  (on your local machine)
+# They should NEVER be in this project folder at all.
+# This entry is a safety net.
+# -----------------------------------------------------------------------------
+
+.aws/
+credentials
+*.pem
+*.key
+
+
+# -----------------------------------------------------------------------------
+# LOGS
+# -----------------------------------------------------------------------------
+
+*.log
+logs/
+
+
+# =============================================================================
+# WHAT IS SAFE TO COMMIT (for clarity)
+# =============================================================================
+# ✅ All *.tf files              — infrastructure code, no secrets
+# ✅ terraform.tfvars.example   — safe public template
+# ✅ lambda/*/handler.py        — application code, no credentials
+# ✅ producer/producer.py       — simulator script, no credentials
+# ✅ README.md                  — documentation
+# ✅ docs/screenshots/          — portfolio evidence
+# ✅ .gitignore                 — this file
+# =============================================================================
