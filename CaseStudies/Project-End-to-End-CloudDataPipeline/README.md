@@ -87,28 +87,10 @@ Organizations need to transform raw transactional data into actionable business 
 ---
 
 ## 🏗️ Architecture
-```mermaid
-graph TD
-    A["RAW DATA CSV Files JSON Files Amazon S3"]
-    B["CATALOG AWS Glue Crawler Schema Discovery Data Catalog"]
-    C["ETL TRANSFORM AWS Glue Job PySpark Processing Join & Aggregate"]
-    D["PROCESSED DATA Parquet Files Year/Month Partitions Amazon S3"]
-    E["QUERY Amazon Athena SQL Analytics Serverless"]
-    F["VISUALIZE Python Scripts Matplotlib & Seaborn Professional Charts"]
-    
-    A --> B
-    B --> C
-    C --> D
-    D --> E
-    E --> F
-    
-    style A fill:#FF9900,stroke:#232F3E,stroke-width:4px,color:#FFFFFF,font-size:16px
-    style B fill:#945DF2,stroke:#232F3E,stroke-width:4px,color:#FFFFFF,font-size:16px
-    style C fill:#945DF2,stroke:#232F3E,stroke-width:4px,color:#FFFFFF,font-size:16px
-    style D fill:#FF9900,stroke:#232F3E,stroke-width:4px,color:#FFFFFF,font-size:16px
-    style E fill:#3B48CC,stroke:#232F3E,stroke-width:4px,color:#FFFFFF,font-size:16px
-    style F fill:#3776AB,stroke:#232F3E,stroke-width:4px,color:#FFFFFF,font-size:16px
-```
+
+## Detailed Architecture — AWS Service Icons
+
+![AWS Architecture Diagram](docs/architecture.png)
 
 ---
 
