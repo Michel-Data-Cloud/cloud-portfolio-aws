@@ -90,7 +90,7 @@ Organizations need to transform raw transactional data into actionable business 
 
 ## Detailed Architecture — AWS Service Icons
 
-![AWS Architecture Diagram](docs/architecture.png)
+![AWS Architecture Diagram](architecture.png)
 
 ---
 
