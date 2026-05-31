@@ -95,89 +95,9 @@ Annual infrastructure cost                        : < $100/year
 
 ### Data Flow Diagram
 
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                        MANUFACTURING FLOOR                              │
-│                                                                         │
-│  [sensor-floor-A-01] [sensor-floor-A-02] [sensor-floor-B-01] [...]     │
-│         │                   │                   │                       │
-└─────────┼───────────────────┼───────────────────┼───────────────────────┘
-          │ PutRecord API     │                   │
-          │ (1 record/sec)    │                   │
-          ▼                   ▼                   ▼
-┌─────────────────────────────────────────────────────────┐
-│              AMAZON KINESIS DATA STREAM                 │
-│         streaming-analytics-sensor-stream               │
-│   1 Shard │ 1 MB/s Ingest │ 24hr Retention             │
-│               Encrypted at rest (KMS)                  │
-└─────────────────────────┬───────────────────────────────┘
-                          │ Event trigger
-                          │ Batch: 100 records
-                          │ Window: 10 seconds
-                          ▼
-┌─────────────────────────────────────────────────────────┐
-│           LAMBDA: Stream Processor                      │
-│       streaming-analytics-stream-processor              │
-│                                                         │
-│  1. Decode base64 Kinesis payload                      │
-│  2. Validate record structure                          │
-│  3. Enrich: add status (normal/warning/critical)       │
-│  4. Enrich: add TTL (now + 7 days)                     │
-│  5. Enrich: add processed_at timestamp                 │
-│  6. Write to DynamoDB                                  │
-└─────────────────────────┬───────────────────────────────┘
-                          │ PutItem
-                          ▼
-┌─────────────────────────────────────────────────────────┐
-│              AMAZON DYNAMODB                            │
-│       streaming-analytics-sensor-readings               │
-│                                                         │
-│  PK: sensor_id (String)                                │
-│  SK: timestamp (String, ISO 8601)                      │
-│  GSI: location-timestamp-index                         │
-│  TTL: ttl attribute (7-day auto-expiry)                │
-│  Billing: On-demand │ Encrypted at rest                │
-└─────────────────────────┬───────────────────────────────┘
-                          │ Query (every 60s)
-                          │ EventBridge: rate(1 minute)
-                          ▼
-┌─────────────────────────────────────────────────────────┐
-│           LAMBDA: Stream Aggregator                     │
-│       streaming-analytics-stream-aggregator             │
-│                                                         │
-│  1. Query last 5 minutes per sensor                    │
-│  2. Compute avg / min / max temperature                │
-│  3. Publish custom metrics → CloudWatch                │
-│  4. If avg > 90°C → Publish alert → SNS               │
-└──────────────┬──────────────────────┬───────────────────┘
-               │                      │
-               ▼                      ▼
-┌──────────────────────┐   ┌──────────────────────────────┐
-│  CLOUDWATCH METRICS  │   │         AMAZON SNS           │
-│                      │   │  anomaly-alerts topic        │
-│  Namespace:          │   │  Encrypted at rest (KMS)     │
-│  StreamingAnalytics/ │   │  Email → On-call Engineer    │
-│  Sensors             │   └──────────────────────────────┘
-│                      │
-│  AvgTemperature      │
-│  MaxTemperature      │
-│  MinTemperature      │
-│  RecordCount         │
-└──────────┬───────────┘
-           │
-           ▼
-┌─────────────────────────────────────────────────────────┐
-│           CLOUDWATCH DASHBOARD                          │
-│       streaming-analytics-dashboard                     │
-│                                                         │
-│  • Kinesis incoming records                            │
-│  • Lambda invocations & errors                         │
-│  • Lambda duration (both functions)                    │
-│  • DynamoDB write capacity                             │
-│  • Sensor avg temperature (all sensors)                │
-│  • Pipeline health alarm status panel                  │
-└─────────────────────────────────────────────────────────┘
-```
+## Detailed Architecture — AWS Service Icons
+
+![AWS Architecture Diagram](docs/architecture.png)
 
 ### Architecture Decisions at a Glance
 
