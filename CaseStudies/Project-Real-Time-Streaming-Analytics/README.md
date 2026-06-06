@@ -152,7 +152,7 @@ This project implements a **fully serverless, real-time streaming analytics pipe
 > A smoke detector costs **$10** and protects a **$250,000 house.**
 > You do not question whether it is worth it — the math is obvious.
 >
-> This pipeline costs **$33/month** in production and protects against
+> This pipeline costs **$33/month (for 4 sensors)** in production and protects against
 > a **$250,000 downtime incident.**
 >
 > You only need it to work **once** to justify years of operation costs.
