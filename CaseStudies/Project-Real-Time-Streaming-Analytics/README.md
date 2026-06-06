@@ -60,34 +60,118 @@ This project implements a **fully serverless, real-time streaming analytics pipe
 
 ## 2. Business Value & ROI
 
-### Operational Impact
+### What Does One Downtime Incident Actually Cost?
 
-| Metric | Without Pipeline | With Pipeline |
-|--------|-----------------|---------------|
-| Anomaly detection time | Hours (manual inspection) | **< 5 minutes** (automated) |
-| Alert delivery | Manual — someone has to notice | **Automated SNS email** to on-call engineer |
-| False positive rate | N/A — no alerting exists | **Low** — 5-min average eliminates sensor noise |
-| Data retention cost | Unbounded storage growth | **Controlled** — auto-expiry via 7-day TTL |
-| Infrastructure cost | N/A | **~$4–8/month** serverless, pay-per-use |
+| Cost Component | Amount |
+|----------------|--------|
+| Lost production revenue (1 hour stopped) | $180,000 |
+| Emergency repair labour and parts | $40,000 |
+| Equipment damage from overheating | $20,000 |
+| Wasted materials and scrap | $10,000 |
+| **Total per incident** | **$250,000** |
 
-### ROI Calculation
+> **Source:** Aberdeen Group, *The True Cost of Downtime* manufacturing
+> research report. The $250,000 figure represents a conservative
+> mid-range estimate for discrete manufacturing environments.
+> Individual components are itemised above so readers can substitute
+> their own figures for their specific industry and plant size.
 
-```
-Average cost of unplanned manufacturing downtime  : $250,000+ per incident
-Pipeline monthly operating cost                   : ~$4–8/month
-Early detection reduces response time             : Hours → < 5 minutes
-Annual infrastructure cost                        : < $100/year
-```
+---
 
-> A **single prevented downtime incident** generates a return that exceeds the annual
-> cost of this pipeline by a factor of **2,500x**.
+### What Does This Pipeline Cost?
+
+#### Development Environment
+
+| Item | Calculation | Cost |
+|------|------------|------|
+| Monthly pipeline cost (active testing only) | $8/month | $8 |
+| Annual pipeline cost | $8 × 12 months | **$96/year** |
+
+> ⚠️ Dev cost assumes Kinesis is deleted between test sessions.
+> Never delete Kinesis in production — it is the live data highway
+> for all sensor readings.
+
+#### Production Environment (Three Realistic Scales)
+
+| Service | 4 Sensors | 100 Sensors | 1,000 Sensors |
+|---------|-----------|-------------|---------------|
+| Kinesis (24/7) | $11 | $11 | $22 |
+| Lambda | ~$0 | ~$2 | ~$18 |
+| DynamoDB On-demand | ~$14 | ~$340 | ~$3,400 |
+| CloudWatch | ~$8 | ~$10 | ~$15 |
+| SNS | ~$0 | ~$0 | ~$1 |
+| **Monthly Total** | **~$33** | **~$363** | **~$3,456** |
+| **Annual Total** | **~$396** | **~$4,356** | **~$41,472** |
+
+---
+
+### The ROI Calculation
+
+#### Development Environment
+
+| | Amount |
+|---|--------|
+| Cost saved by preventing 1 incident | $250,000 |
+| Annual pipeline cost (dev) | $96 |
+| Net benefit | $249,904 |
+| **Return on every $1 spent** | **$2,604x** |
+
+#### Production Environment
+
+| Scale | Annual Pipeline Cost | Cost of 1 Incident | Net Benefit | ROI |
+|-------|---------------------|--------------------|-------------|-----|
+| 4 sensors | $396 | $250,000 | $249,604 | **631x** |
+| 100 sensors | $4,356 | $250,000 | $245,644 | **57x** |
+| 1,000 sensors | $41,472 | $250,000 | $208,528 | **6x** |
+
+> At **every scale**, preventing a single $250,000 downtime incident
+> returns more than the entire annual cost of the pipeline.
+> Even at 1,000 sensors — the most expensive scale — one prevented
+> incident pays for **6 full years** of pipeline operation.
+
+---
+
+### How Many Incidents Need to Be Prevented to Break Even?
+
+| Scale | Annual Cost | Break-Even Incidents Per Year |
+|-------|-------------|-------------------------------|
+| Dev | $96 | 0.0004 — less than 1 every 2,500 years |
+| 4 sensors (prod) | $396 | 0.002 — less than 1 every 500 years |
+| 100 sensors (prod) | $4,356 | 0.017 — less than 1 every 58 years |
+| 1,000 sensors (prod) | $41,472 | 0.17 — less than 1 every 6 years |
+
+> In plain English: the pipeline pays for itself at every scale
+> even if it only prevents a fraction of one incident per year.
+
+---
+
+### In Plain English — For Any Audience
+
+> Think of this pipeline like a **smoke detector for a factory.**
+>
+> A smoke detector costs **$10** and protects a **$250,000 house.**
+> You do not question whether it is worth it — the math is obvious.
+>
+> This pipeline costs **$33/month** in production and protects against
+> a **$250,000 downtime incident.**
+>
+> You only need it to work **once** to justify years of operation costs.
+
+---
 
 ### Design Choices That Drive Business Value
 
-- **5-minute windowed average** for anomaly detection eliminates sensor noise and reduces alert fatigue for the operations team
-- **TTL-based auto-expiry** (7 days) keeps storage costs near zero without any maintenance Lambda or scheduled job
-- **Fully serverless architecture** means zero idle compute cost — the pipeline costs nothing when sensors are not sending data
-- **All resources tagged** with `Project` and `Environment` for granular Cost Explorer tracking and chargeback reporting
+| Decision | Business Impact |
+|----------|----------------|
+| **5-minute windowed average** for anomaly detection | Eliminates sensor noise false positives — reduces alert fatigue for the operations team |
+| **TTL-based auto-expiry** (7 days) | Storage costs stay near zero without any maintenance job or manual cleanup |
+| **Fully serverless architecture** | Lambda and DynamoDB cost nothing when idle — only Kinesis has a continuous charge in production |
+| **All resources tagged** with `Project` and `Environment` | Enables granular Cost Explorer tracking and chargeback reporting by project |
+| **SNS email alerts** | On-call engineers are notified within seconds of a threshold breach — no dashboard monitoring required |
+
+> ⚠️ **Lambda and DynamoDB are truly serverless:** they cost nothing when not processing data. 
+> Kinesis is the exception: it charges $0.015/shard/hour even when the stream is empty.
+> This is why stopping or deleting the Kinesis stream during development (when not actively testing) is the > single most effective cost control measure for this project.
 
 ---
 
@@ -95,7 +179,7 @@ Annual infrastructure cost                        : < $100/year
 
 ### Data Flow Diagram
 
-## Detailed Architecture — AWS Service Icons
+### Detailed Architecture — AWS Service Icons
 
 ![AWS Architecture Diagram](docs/architecture.png)
 
@@ -232,16 +316,61 @@ Scale trigger     : Add 1 shard per 1,000 sensors added
 | **Resource tagging** | All resources tagged for Cost Explorer filtering and per-project cost attribution |
 | **Kinesis cost awareness** | Documented: Kinesis is the primary cost driver ($0.015/shard/hour). Delete or stop when not testing |
 
-**Monthly Cost Estimate**
+> ⚠️ **Development only:** Delete or stop the Kinesis stream between
+> test sessions to avoid the $0.015/shard/hour idle charge.
+> In production, Kinesis runs continuously — it must never be deleted
+> as it is the live data highway for all sensor readings.
 
-| Service | Scenario | Cost |
-|---------|----------|------|
-| Kinesis | Testing only (2–3 hrs/day) | ~$1–3 |
-| Lambda | Dev volume (within free tier) | ~$0 |
-| DynamoDB | On-demand, dev volume | ~$0.05–0.10 |
-| CloudWatch | 1 dashboard + metrics + logs | ~$3–5 |
-| SNS | Within free tier | ~$0 |
-| **Total** | | **~$4–8/month** |
+### Development Cost (Active Testing Only)
+
+| Service | Usage Assumption | Monthly Cost |
+|---------|-----------------|-------------|
+| Kinesis | 1 shard, ~3 hrs/day testing | ~$1–3 |
+| Lambda | Well within free tier | ~$0 |
+| DynamoDB | On-demand, minimal writes | ~$1 |
+| CloudWatch | 1 dashboard + metrics | ~$5 |
+| SNS | Well within free tier | ~$0 |
+| **Total** | | **~$7–9/month** |
+
+> Dev tip: Delete Kinesis between sessions. It is the only idle cost driver.
+
+---
+
+### Production Cost (3 Realistic Scales)
+
+| Service | 4 Sensors (small) | 100 Sensors (medium) | 1,000 Sensors (large) |
+|---------|-------------------|---------------------|----------------------|
+| **Kinesis** | 1 shard = $11 | 1 shard = $11 | 2 shards = $22 |
+| **Lambda** | ~$0 (free tier) | ~$2 | ~$18 |
+| **DynamoDB** | ~$14 | ~$340 | ~$3,400* |
+| **CloudWatch** | ~$8 | ~$10 | ~$15 |
+| **SNS** | ~$0 | ~$0 | ~$1 |
+| **Monthly Total** | **~$33** | **~$363** | **~$3,456*** |
+| **Annual Total** | **~$396** | **~$4,356** | **~$41,472*** |
+
+*At 1,000+ sensors, switch DynamoDB from On-demand to Provisioned
+mode (~30% savings) and add Kinesis Data Analytics for pre-aggregation
+to reduce DynamoDB write volume. Realistic large-scale cost after
+optimisation: ~$1,800–2,200/month.
+
+### What Drives Production Costs?
+
+| Scale | Primary Cost Driver | Optimisation |
+|-------|-------------------|-------------|
+| Small (4 sensors) | CloudWatch fixed fees | Accept — minimal |
+| Medium (100 sensors) | DynamoDB write volume | Consider Provisioned mode |
+| Large (1,000+ sensors) | DynamoDB write volume | Provisioned + pre-aggregation |
+
+### Production ROI at Each Scale
+
+| Scale | Monthly Cost | Incidents Prevented/Year to Break Even |
+|-------|-------------|---------------------------------------|
+| Small | $33 | 0.002 incidents (less than 1 per 500 years) |
+| Medium | $363 | 0.017 incidents (less than 1 per 58 years) |
+| Large | $3,456 | 0.17 incidents (less than 1 per 6 years) |
+
+> At every scale, preventing a single $250,000 downtime incident
+> pays for years of pipeline operation.
 
 ---
 
@@ -646,37 +775,78 @@ logs:PutLogEvents                → (same)
 
 ### Development Environment (Active Testing Only)
 
-| Service | Pricing Basis | Usage | Monthly Estimate |
-|---------|--------------|-------|-----------------|
-| **Kinesis Data Streams** | $0.015/shard/hour | 1 shard, testing only (~3 hrs/day) | ~$1–3 |
-| **AWS Lambda** | Per invocation + GB-sec | 1M free requests/month | ~$0 |
-| **Amazon DynamoDB** | Per read/write + storage | On-demand, dev volume | ~$0.05–0.10 |
-| **Amazon CloudWatch** | Dashboard + metrics + logs | 1 dashboard, ~16 custom metrics | ~$3–5 |
-| **Amazon SNS** | Per publish + delivery | 1M free publishes/month | ~$0 |
-| | | **Total** | **~$4–8/month** |
+| Service | Usage Assumption | Monthly Cost |
+|---------|-----------------|-------------|
+| Kinesis | 1 shard, ~3 hrs/day | ~$1–3 |
+| Lambda | Within free tier | ~$0 |
+| DynamoDB | On-demand, dev volume | ~$1 |
+| CloudWatch | 1 dashboard + metrics | ~$5 |
+| SNS | Within free tier | ~$0 |
+| **Total** | | **~$7–9/month** |
 
-### Cost Control Measures Implemented
+> ⚠️ Dev only: Delete Kinesis between sessions to avoid the
+> $0.015/shard/hour idle charge. Never delete Kinesis in production
+> — it is the live data highway for all sensor readings.
 
-| Measure | Saving |
-|---------|--------|
-| Kinesis: delete when not testing | Avoids $10.80/month continuous charge |
-| DynamoDB On-demand | No idle provisioned capacity |
-| TTL = 7 days | Storage stays < 1MB for dev workload |
-| Lambda 256MB memory | Right-sized — not over-provisioned |
-| Logs retention = 30 days | Prevents unbounded CloudWatch Logs cost |
-| Billing alarm at $10/month | Protection against unexpected charges |
-| Resource tagging | Cost Explorer per-project attribution |
+---
 
-### Scaling Cost Projections
+### Production Environment — Three Realistic Scales
 
-| Scale | Kinesis | DynamoDB | Lambda | Estimate |
-|-------|---------|----------|--------|----------|
-| 4 sensors (dev) | $10.80/mo (24/7) | < $1/mo | ~$0 | ~$15/mo |
-| 100 sensors | $10.80/mo | ~$5/mo | ~$1/mo | ~$20/mo |
-| 1,000 sensors | $21.60/mo (2 shards) | ~$50/mo | ~$10/mo | ~$85/mo |
-| 10,000 sensors | $108/mo (10 shards) | ~$500/mo | ~$100/mo | ~$715/mo |
+| Service | 4 Sensors | 100 Sensors | 1,000 Sensors |
+|---------|-----------|------------|---------------|
+| Kinesis | $11 (1 shard) | $11 (1 shard) | $22 (2 shards) |
+| Lambda | ~$0 | ~$2 | ~$18 |
+| DynamoDB On-demand | ~$14 | ~$340 | ~$3,400 |
+| CloudWatch | ~$8 | ~$10 | ~$15 |
+| SNS | ~$0 | ~$0 | ~$1 |
+| **Monthly Total** | **~$33** | **~$363** | **~$3,456** |
+| **Annual Total** | **~$396** | **~$4,356** | **~$41,472** |
 
-> At 10,000 sensors, DynamoDB Provisioned mode would reduce costs by ~30% at sustained load.
+---
+
+### At 1,000 Sensors — On-demand vs Provisioned Comparison
+
+This is where the billing mode decision becomes financially significant.
+
+| | DynamoDB On-demand | DynamoDB Provisioned | Saving |
+|---|---|---|---|
+| Write cost basis | $1.25 per million writes | Fixed WCU reservation | — |
+| 1,000 sensors × 1 write/sec × 24hr | 86,400,000 writes/day | 1,000 WCU provisioned | — |
+| **Monthly cost** | **~$3,400** | **~$2,380** | **~$1,020/month** |
+| **Annual cost** | **~$40,800** | **~$28,560** | **~$12,240/year** |
+| **Saving** | baseline | **~30% cheaper** | ✅ |
+
+> **When to switch:** Once your write volume is consistent and
+> predictable 24/7 — typically when you reach 50+ sensors running
+> continuously — Provisioned mode saves meaningful money.
+> Below that threshold, On-demand is simpler and equally cost-effective.
+
+---
+
+### Cost Optimisation Decisions Made
+
+| Decision | Monthly Saving | Why |
+|----------|---------------|-----|
+| Delete Kinesis between dev sessions | ~$8 | $0.015/shard/hr idle charge eliminated |
+| DynamoDB On-demand (no idle capacity) | ~$5 | No reserved WCUs sitting unused |
+| TTL = 7 days (auto-delete old records) | ~$2 | Storage stays under 1GB for dev |
+| Lambda 256MB memory (right-sized) | ~$1 | Not over-provisioned |
+| Log retention = 30 days | ~$1 | Prevents unbounded CloudWatch Logs cost |
+| Billing alarm at $10/month | Priceless | Protection against surprise bills |
+
+---
+
+### Production ROI at Each Scale
+
+| Scale | Annual Pipeline Cost | Incidents Prevented to Break Even |
+|-------|---------------------|----------------------------------|
+| 4 sensors | $396 | 0.002 per year (essentially free insurance) |
+| 100 sensors | $4,356 | 0.017 per year |
+| 1,000 sensors | $41,472 | 0.17 per year |
+
+> At every scale, preventing **one** $250,000 downtime incident
+> pays for years of pipeline operation. See Section 2 for the
+> full ROI calculation and cost breakdown.
 
 ---
 
@@ -697,9 +867,11 @@ from decimal import Decimal
 {"temperature": Decimal(str(72.4))}
 ```
 
-**2. Kinesis records are base64-encoded**
+**2. Kinesis records are always base64-encoded — by design, not by choice**
 
-The Lambda event payload wraps each Kinesis record's data in base64 encoding. Decoding is a required first step before JSON parsing. Missing this step raises a `json.JSONDecodeError` that can be confusing to debug.
+AWS always base64-encodes Kinesis record data before delivering it to Lambda. This is not a configuration option — it is how Kinesis works for all record types, whether the original data is JSON text, CSV,
+or binary. The reason: Kinesis is designed to carry any data type including raw binary, and base64 encoding ensures the Lambda event payload is always safe, consistent, and JSON-compatible regardless
+of what the producer originally sent. Decoding is therefore always a required first step before parsing.
 
 ```python
 payload = base64.b64decode(record["kinesis"]["data"]).decode("utf-8")
@@ -798,9 +970,9 @@ This project provides hands-on coverage of the **AWS Certified Data Engineer –
 | Pillar | Evidence |
 |--------|---------|
 | ✅ **Real Business Problem** | Manufacturing plant IoT overheating detection — quantified downtime risk |
-| ✅ **Business Value & ROI** | $250K+ downtime prevention vs $4–8/month pipeline cost documented |
+| ✅ **Business Value & ROI** | $250K+ downtime prevention vs $4–8/month pipeline cost documented ($250,000 downtime cost sourced from Aberdeen Group. Full calculation in Section 2.)|
 | ✅ **AWS Well-Architected** | All 6 framework pillars addressed with specific implementation evidence |
-| ✅ **Architecture Diagrams** | ASCII architecture diagram + data flow in this README |
+| ✅ **Architecture Diagrams** | Professional AWS icon diagram built in draw.io, diagram embedded in README |
 | ✅ **IaC — Terraform** | 9 `.tf` files, ~600 lines, deploys full stack with `terraform apply` |
 | ✅ **Monitoring + Observability** | 4 alarms + 6-widget dashboard + structured logs + Logs Insights queries |
 | ✅ **Security Thinking** | Least-privilege IAM, encryption everywhere, production enhancements documented |
