@@ -60,6 +60,15 @@ This project implements a **fully serverless, real-time streaming analytics pipe
 
 ## 2. Business Value & ROI
 
+### What Problem Does This Project Solve?
+
+Manufacturing plants lose money every time a machine breaks down
+unexpectedly. A sensor that detects overheating **before** a machine
+fails gives engineers time to intervene — preventing the breakdown
+entirely. This pipeline is that detection system.
+
+---
+
 ### What Does One Downtime Incident Actually Cost?
 
 | Cost Component | Amount |
@@ -68,7 +77,7 @@ This project implements a **fully serverless, real-time streaming analytics pipe
 | Emergency repair labour and parts | $40,000 |
 | Equipment damage from overheating | $20,000 |
 | Wasted materials and scrap | $10,000 |
-| **Total per incident** | **$250,000** |
+| **Total cost of ONE incident** | **$250,000** |
 
 > **Source:** Aberdeen Group, *The True Cost of Downtime* manufacturing
 > research report. The $250,000 figure represents a conservative
@@ -78,20 +87,20 @@ This project implements a **fully serverless, real-time streaming analytics pipe
 
 ---
 
-### What Does This Pipeline Cost?
+### What Does This Pipeline Cost to Run?
 
 #### Development Environment
 
 | Item | Calculation | Cost |
 |------|------------|------|
-| Monthly pipeline cost (active testing only) | $8/month | $8 |
-| Annual pipeline cost | $8 × 12 months | **$96/year** |
+| Monthly pipeline cost (active testing only) | — | $8/month |
+| **Annual pipeline cost** | $8 × 12 months | **$96/year** |
 
 > ⚠️ Dev cost assumes Kinesis is deleted between test sessions.
 > Never delete Kinesis in production — it is the live data highway
 > for all sensor readings.
 
-#### Production Environment (Three Realistic Scales)
+#### Production Environment
 
 | Service | 4 Sensors | 100 Sensors | 1,000 Sensors |
 |---------|-----------|-------------|---------------|
@@ -105,57 +114,206 @@ This project implements a **fully serverless, real-time streaming analytics pipe
 
 ---
 
-### The ROI Calculation
+### The ROI Calculation — Full Math Shown
 
-#### Development Environment
+The standard ROI formula is:
 
-| | Amount |
-|---|--------|
-| Cost saved by preventing 1 incident | $250,000 |
-| Annual pipeline cost (dev) | $96 |
-| Net benefit | $249,904 |
-| **Return on every $1 spent** | **$2,604x** |
+```
+ROI = ((Value Gained - Cost Invested) / Cost Invested) × 100
+```
 
-#### Production Environment
+Where:
+- **Value Gained** = money saved by preventing one downtime incident = $250,000
+- **Cost Invested** = annual cost of running this pipeline
 
-| Scale | Annual Pipeline Cost | Cost of 1 Incident | Net Benefit | ROI |
-|-------|---------------------|--------------------|-------------|-----|
-| 4 sensors | $396 | $250,000 | $249,604 | **631x** |
-| 100 sensors | $4,356 | $250,000 | $245,644 | **57x** |
-| 1,000 sensors | $41,472 | $250,000 | $208,528 | **6x** |
-
-> At **every scale**, preventing a single $250,000 downtime incident
-> returns more than the entire annual cost of the pipeline.
-> Even at 1,000 sensors — the most expensive scale — one prevented
-> incident pays for **6 full years** of pipeline operation.
+This formula produces a **percentage** — how much return you get
+relative to what you spent.
 
 ---
 
-### How Many Incidents Need to Be Prevented to Break Even?
+#### Development Environment ROI
 
-| Scale | Annual Cost | Break-Even Incidents Per Year |
-|-------|-------------|-------------------------------|
-| Dev | $96 | 0.0004 — less than 1 every 2,500 years |
-| 4 sensors (prod) | $396 | 0.002 — less than 1 every 500 years |
-| 100 sensors (prod) | $4,356 | 0.017 — less than 1 every 58 years |
-| 1,000 sensors (prod) | $41,472 | 0.17 — less than 1 every 6 years |
+```
+Value Gained   = $250,000  (one prevented incident)
+Cost Invested  = $96       (annual dev pipeline cost)
 
-> In plain English: the pipeline pays for itself at every scale
-> even if it only prevents a fraction of one incident per year.
+ROI = (($250,000 - $96) / $96) × 100
+    = ($249,904 / $96) × 100
+    = 2,604 × 100
+    = 260,400%
+```
+
+> **260,400% ROI** means: for every $1 spent on the pipeline,
+> you get $2,601 back in prevented losses — plus your original $1.
+> In other words, $1 invested returns $2,602 total.
+
+---
+
+#### Production Environment ROI — All Three Scales
+
+**4 Sensors (Small Production)**
+
+```
+Value Gained   = $250,000
+Cost Invested  = $396  (annual production cost, 4 sensors)
+
+ROI = (($250,000 - $396) / $396) × 100
+    = ($249,604 / $396) × 100
+    = 630.3 × 100
+    = 63,030%
+```
+
+**100 Sensors (Medium Production)**
+
+```
+Value Gained   = $250,000
+Cost Invested  = $4,356  (annual production cost, 100 sensors)
+
+ROI = (($250,000 - $4,356) / $4,356) × 100
+    = ($245,644 / $4,356) × 100
+    = 56.4 × 100
+    = 5,640%
+```
+
+**1,000 Sensors (Large Production)**
+
+```
+Value Gained   = $250,000
+Cost Invested  = $41,472  (annual production cost, 1,000 sensors)
+
+ROI = (($250,000 - $41,472) / $41,472) × 100
+    = ($208,528 / $41,472) × 100
+    = 5.03 × 100
+    = 503%
+```
+
+**Summary Table**
+
+| Scale | Annual Cost | Value Gained | Net Benefit | ROI % |
+|-------|-------------|-------------|-------------|-------|
+| Dev | $96 | $250,000 | $249,904 | **260,400%** |
+| 4 sensors | $396 | $250,000 | $249,604 | **63,030%** |
+| 100 sensors | $4,356 | $250,000 | $245,644 | **5,640%** |
+| 1,000 sensors | $41,472 | $250,000 | $208,528 | **503%** |
+
+> ✅ Even at the most expensive scale (1,000 sensors, $41,472/year),
+> preventing **one** incident returns **503%** — meaning every $1
+> spent returns $6.03 back. The pipeline pays for itself more than
+> five times over from a single prevented incident.
+
+---
+
+### What Does "ROI %" Actually Mean in Plain English?
+
+```
+ROI = 260,400%  means:  for every $1 you spend, you get back $2,605
+ROI =  63,030%  means:  for every $1 you spend, you get back $631
+ROI =   5,640%  means:  for every $1 you spend, you get back $57
+ROI =     503%  means:  for every $1 you spend, you get back $6
+```
+
+The formula to convert ROI % to "dollars returned per $1 spent":
+
+```
+Dollars returned per $1 = (ROI% / 100) + 1
+
+Example: ROI = 63,030%
+  = (63,030 / 100) + 1
+  = 630.3 + 1
+  = $631.30 returned for every $1 spent
+```
+
+> This is where the "631x" figure in earlier versions of this
+> document came from. It is now replaced with the clearer ROI %
+> format so the math is fully transparent.
+
+---
+
+### Why "You Only Need It To Work Once"
+
+This statement means: **one prevented incident generates more value
+than the pipeline costs to run for years.**
+
+Here is the exact math showing how many years of operation each
+scale can fund from a single prevented incident:
+
+```
+Years funded = Value Gained / Annual Cost
+
+Dev           : $250,000 / $96       = 2,604 years of pipeline operation
+4 sensors     : $250,000 / $396      =   631 years of pipeline operation
+100 sensors   : $250,000 / $4,356   =    57 years of pipeline operation
+1,000 sensors : $250,000 / $41,472  =     6 years of pipeline operation
+```
+
+> Preventing **one** $250,000 incident at the 1,000-sensor scale
+> funds **6 full years** of continuous pipeline operation.
+> At the 4-sensor scale, it funds **631 years.**
+
+---
+
+### Break-Even Analysis — Exact Calculations
+
+Break-even answers the question:
+> *"How many incidents must this pipeline prevent per year
+> just to cover its own annual cost?"*
+
+```
+Break-Even Incidents = Annual Cost / Value per Incident
+
+Dev           : $96       / $250,000 = 0.000384 incidents/year
+4 sensors     : $396      / $250,000 = 0.001584 incidents/year
+100 sensors   : $4,356    / $250,000 = 0.017424 incidents/year
+1,000 sensors : $41,472   / $250,000 = 0.165888 incidents/year
+```
+
+**Converting to "years between incidents" — exact math:**
+
+```
+Years between incidents = 1 / Break-Even Incidents per Year
+
+Dev           : 1 / 0.000384  = 2,604 years between incidents
+4 sensors     : 1 / 0.001584  =   631 years between incidents
+100 sensors   : 1 / 0.017424  =    57 years between incidents
+1,000 sensors : 1 / 0.165888  =     6 years between incidents
+```
+
+**Summary Table — Full Calculations Shown**
+
+| Scale | Annual Cost | Break-Even Calc | Incidents/Year | Years Between |
+|-------|-------------|----------------|---------------|---------------|
+| Dev | $96 | $96 ÷ $250,000 | 0.000384 | 2,604 yrs |
+| 4 sensors | $396 | $396 ÷ $250,000 | 0.001584 | 631 yrs |
+| 100 sensors | $4,356 | $4,356 ÷ $250,000 | 0.017424 | 57 yrs |
+| 1,000 sensors | $41,472 | $41,472 ÷ $250,000 | 0.165888 | 6 yrs |
+
+> **How to read this table:**
+> The pipeline at the 1,000-sensor scale breaks even if it prevents
+> just 0.166 incidents per year — meaning one incident every 6 years.
+> Manufacturing plants typically experience multiple equipment failures
+> per year, making this threshold trivially easy to exceed.
 
 ---
 
 ### In Plain English — For Any Audience
 
-> Think of this pipeline like a **smoke detector for a factory.**
+> **Think of this pipeline like a smoke detector.**
 >
-> A smoke detector costs **$10** and protects a **$250,000 house.**
-> You do not question whether it is worth it — the math is obvious.
+> A smoke detector costs **$30/year** to maintain.
+> It protects a house worth **$300,000.**
 >
-> This pipeline costs **$33/month (for 4 sensors)** in production and protects against
-> a **$250,000 downtime incident.**
+> You do not calculate ROI before buying a smoke detector.
+> The math is obvious: the cost of protection is so small
+> relative to the cost of the disaster it prevents that
+> the only question is why you would NOT have one.
 >
-> You only need it to work **once** to justify years of operation costs.
+> This pipeline costs **$33/month ($396/year)** in production.
+> It protects against a **$250,000** downtime incident.
+>
+> The break-even point is preventing one incident every **631 years.**
+> Manufacturing plants experience equipment failures far more
+> frequently than once every 631 years.
+> **The pipeline pays for itself many times over.**
 
 ---
 
@@ -163,15 +321,19 @@ This project implements a **fully serverless, real-time streaming analytics pipe
 
 | Decision | Business Impact |
 |----------|----------------|
-| **5-minute windowed average** for anomaly detection | Eliminates sensor noise false positives — reduces alert fatigue for the operations team |
+| **5-minute windowed average** for anomaly detection | Eliminates false positives from sensor noise — reduces wasted engineer callouts |
 | **TTL-based auto-expiry** (7 days) | Storage costs stay near zero without any maintenance job or manual cleanup |
 | **Fully serverless architecture** | Lambda and DynamoDB cost nothing when idle — only Kinesis has a continuous charge in production |
 | **All resources tagged** with `Project` and `Environment` | Enables granular Cost Explorer tracking and chargeback reporting by project |
-| **SNS email alerts** | On-call engineers are notified within seconds of a threshold breach — no dashboard monitoring required |
+| **SNS email alerts** | On-call engineers notified within seconds of threshold breach — no manual dashboard monitoring required |
 
-> ⚠️ **Lambda and DynamoDB are truly serverless:** they cost nothing when not processing data. 
-> Kinesis is the exception: it charges $0.015/shard/hour even when the stream is empty.
-> This is why stopping or deleting the Kinesis stream during development (when not actively testing) is the > single most effective cost control measure for this project.
+> ⚠️ **Note on serverless costs:** Lambda and DynamoDB are truly
+> serverless — they cost nothing when not processing data.
+> Kinesis is the exception: it charges $0.015/shard/hour even when
+> the stream is empty. This is why deleting the Kinesis stream
+> between development sessions is the single most effective cost
+> control measure for this project. In production, Kinesis runs
+> continuously and must never be deleted.
 
 ---
 
