@@ -91,10 +91,15 @@ entirely. This pipeline is that detection system.
 
 #### Development Environment
 
-| Item | Calculation | Cost |
-|------|------------|------|
-| Monthly pipeline cost (active testing only) | — | $8/month |
-| **Annual pipeline cost** | $8 × 12 months | **$96/year** |
+| Service | Usage Assumption | Monthly Cost |
+|---------|-----------------|-------------|
+| Kinesis | 1 shard, ~3 hrs/day testing only | ~$1 |
+| Lambda | Well within free tier (1M requests/month) | ~$0 |
+| DynamoDB | On-demand, minimal dev volume | ~$1 |
+| CloudWatch | 1 dashboard + custom metrics + logs | ~$5 |
+| SNS | Well within free tier (1M publishes/month) | ~$0 |
+| **Monthly Total** | | **~$7/month** |
+| **Annual Total** | **$7 × 12 months** | **~$84/year** |
 
 > ⚠️ Dev cost assumes Kinesis is deleted between test sessions.
 > Never delete Kinesis in production — it is the live data highway
@@ -102,15 +107,15 @@ entirely. This pipeline is that detection system.
 
 #### Production Environment — 1,000 Sensors
 
-| Service | Monthly Cost |
-|---------|-------------|
-| Kinesis (2 shards, 24/7) | $22 |
-| Lambda | ~$18 |
-| DynamoDB On-demand | ~$3,400 |
-| CloudWatch | ~$15 |
-| SNS | ~$1 |
-| **Monthly Total** | **~$3,456** |
-| **Annual Total** | **~$41,472** |
+| Service | Usage Assumption | Monthly Cost |
+|---------|-----------------|-------------|
+| Kinesis | 2 shards running 24/7 ($0.015 × 2 shards × 730 hrs) | ~$22 |
+| Lambda | ~18M invocations/month beyond free tier | ~$18 |
+| DynamoDB | On-demand: 1,000 sensors × 1 write/sec × 86,400 sec/day | ~$3,400 |
+| CloudWatch | 1 dashboard + custom metrics + logs | ~$15 |
+| SNS | Alert publishes per month | ~$1 |
+| **Monthly Total** | | **~$3,456/month** |
+| **Annual Total** | **$3,456 × 12 months** | **~$41,472/year** |
 
 ---
 
