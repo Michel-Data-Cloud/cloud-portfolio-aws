@@ -100,17 +100,17 @@ entirely. This pipeline is that detection system.
 > Never delete Kinesis in production — it is the live data highway
 > for all sensor readings.
 
-#### Production Environment
+#### Production Environment — 1,000 Sensors
 
-| Service | 4 Sensors | 100 Sensors | 1,000 Sensors |
-|---------|-----------|-------------|---------------|
-| Kinesis (24/7) | $11 | $11 | $22 |
-| Lambda | ~$0 | ~$2 | ~$18 |
-| DynamoDB On-demand | ~$14 | ~$340 | ~$3,400 |
-| CloudWatch | ~$8 | ~$10 | ~$15 |
-| SNS | ~$0 | ~$0 | ~$1 |
-| **Monthly Total** | **~$33** | **~$363** | **~$3,456** |
-| **Annual Total** | **~$396** | **~$4,356** | **~$41,472** |
+| Service | Monthly Cost |
+|---------|-------------|
+| Kinesis (2 shards, 24/7) | $22 |
+| Lambda | ~$18 |
+| DynamoDB On-demand | ~$3,400 |
+| CloudWatch | ~$15 |
+| SNS | ~$1 |
+| **Monthly Total** | **~$3,456** |
+| **Annual Total** | **~$41,472** |
 
 ---
 
@@ -144,38 +144,11 @@ ROI = (($250,000 - $96) / $96) × 100
 ```
 
 > **260,400% ROI** means: for every $1 spent on the pipeline,
-> you get $2,601 back in prevented losses — plus your original $1.
-> In other words, $1 invested returns $2,602 total.
+> you get $2,604 back in prevented losses.
 
 ---
 
-#### Production Environment ROI — All Three Scales
-
-**4 Sensors (Small Production)**
-
-```
-Value Gained   = $250,000
-Cost Invested  = $396  (annual production cost, 4 sensors)
-
-ROI = (($250,000 - $396) / $396) × 100
-    = ($249,604 / $396) × 100
-    = 630.3 × 100
-    = 63,030%
-```
-
-**100 Sensors (Medium Production)**
-
-```
-Value Gained   = $250,000
-Cost Invested  = $4,356  (annual production cost, 100 sensors)
-
-ROI = (($250,000 - $4,356) / $4,356) × 100
-    = ($245,644 / $4,356) × 100
-    = 56.4 × 100
-    = 5,640%
-```
-
-**1,000 Sensors (Large Production)**
+#### Production Environment ROI — 1,000 Sensors
 
 ```
 Value Gained   = $250,000
@@ -187,17 +160,10 @@ ROI = (($250,000 - $41,472) / $41,472) × 100
     = 503%
 ```
 
-**Summary Table**
-
-| Scale | Annual Cost | Value Gained | Net Benefit | ROI % |
-|-------|-------------|-------------|-------------|-------|
-| Dev | $96 | $250,000 | $249,904 | **260,400%** |
-| 4 sensors | $396 | $250,000 | $249,604 | **63,030%** |
-| 100 sensors | $4,356 | $250,000 | $245,644 | **5,640%** |
-| 1,000 sensors | $41,472 | $250,000 | $208,528 | **503%** |
-
-> ✅ Even at the most expensive scale (1,000 sensors, $41,472/year),
-> preventing **one** incident returns **503%.**
+> **503% ROI** means: for every $1 spent on the pipeline,
+> you get $6.03 back in prevented losses.
+>
+> Where does $6.03 come from?
 >
 > ```
 > Dollars returned per $1 spent = (ROI% / 100) + 1
@@ -205,32 +171,18 @@ ROI = (($250,000 - $41,472) / $41,472) × 100
 >                               = 5.03 + 1
 >                               = $6.03
 > ```
->
-> Every $1 invested in the pipeline returns $6.03 back.
-> The pipeline pays for itself more than five times over
-> from a single prevented incident.
 
 ---
 
-### What Does "ROI %" Actually Mean in Plain English?
+### ROI Summary
 
-```
-ROI = 260,400%  means:  for every $1 you spend, you get back $2,605
-ROI =  63,030%  means:  for every $1 you spend, you get back $631
-ROI =   5,640%  means:  for every $1 you spend, you get back $57
-ROI =     503%  means:  for every $1 you spend, you get back $6
-```
-
-The formula to convert ROI % to "dollars returned per $1 spent":
-
-```
-Dollars returned per $1 = (ROI% / 100) + 1
-
-Example: ROI = 63,030%
-  = (63,030 / 100) + 1
-  = 630.3 + 1
-  = $631.30 returned for every $1 spent
-```
+| | Dev | Production (1,000 sensors) |
+|---|-----|--------------------------|
+| Annual Cost | $96 | $41,472 |
+| Value Gained (1 incident prevented) | $250,000 | $250,000 |
+| Net Benefit | $249,904 | $208,528 |
+| **ROI %** | **260,400%** | **503%** |
+| **Dollars returned per $1 spent** | **$2,605** | **$6.03** |
 
 ---
 
@@ -239,21 +191,17 @@ Example: ROI = 63,030%
 This statement means: **one prevented incident generates more value
 than the pipeline costs to run for years.**
 
-Here is the exact math showing how many years of operation each
-scale can fund from a single prevented incident:
+Here is the exact math:
 
 ```
-Years funded = Value Gained / Annual Cost
+Years funded by one prevented incident = Value Gained / Annual Cost
 
-Dev           : $250,000 / $96       = 2,604 years of pipeline operation
-4 sensors     : $250,000 / $396      =   631 years of pipeline operation
-100 sensors   : $250,000 / $4,356   =    57 years of pipeline operation
-1,000 sensors : $250,000 / $41,472  =     6 years of pipeline operation
+Dev        : $250,000 / $96      = 2,604 years of pipeline operation
+Production : $250,000 / $41,472  =     6 years of pipeline operation
 ```
 
-> Preventing **one** $250,000 incident at the 1,000-sensor scale
-> funds **6 full years** of continuous pipeline operation.
-> At the 4-sensor scale, it funds **631 years.**
+> Preventing **one** $250,000 incident at the 1,000-sensor production
+> scale funds **6 full years** of continuous pipeline operation.
 
 ---
 
@@ -264,39 +212,35 @@ Break-even answers the question:
 > just to cover its own annual cost?"*
 
 ```
-Break-Even Incidents = Annual Cost / Value per Incident
+Break-Even Incidents per Year = Annual Cost / Value per Incident
 
-Dev           : $96       / $250,000 = 0.000384 incidents/year
-4 sensors     : $396      / $250,000 = 0.001584 incidents/year
-100 sensors   : $4,356    / $250,000 = 0.017424 incidents/year
-1,000 sensors : $41,472   / $250,000 = 0.165888 incidents/year
+Dev        : $96      / $250,000 = 0.000384 incidents/year
+Production : $41,472  / $250,000 = 0.165888 incidents/year
 ```
 
-**Converting to "years between incidents" — exact math:**
+**Converting to "years between incidents":**
 
 ```
 Years between incidents = 1 / Break-Even Incidents per Year
 
-Dev           : 1 / 0.000384  = 2,604 years between incidents
-4 sensors     : 1 / 0.001584  =   631 years between incidents
-100 sensors   : 1 / 0.017424  =    57 years between incidents
-1,000 sensors : 1 / 0.165888  =     6 years between incidents
+Dev        : 1 / 0.000384  = 2,604 years between incidents
+Production : 1 / 0.165888  =     6 years between incidents
 ```
 
 **Summary Table — Full Calculations Shown**
 
-| Scale | Annual Cost | Break-Even Calc | Incidents/Year | Years Between |
-|-------|-------------|----------------|---------------|---------------|
-| Dev | $96 | $96 ÷ $250,000 | 0.000384 | 2,604 yrs |
-| 4 sensors | $396 | $396 ÷ $250,000 | 0.001584 | 631 yrs |
-| 100 sensors | $4,356 | $4,356 ÷ $250,000 | 0.017424 | 57 yrs |
-| 1,000 sensors | $41,472 | $41,472 ÷ $250,000 | 0.165888 | 6 yrs |
+| | Dev | Production (1,000 sensors) |
+|---|-----|--------------------------|
+| Annual Cost | $96 | $41,472 |
+| Break-Even Calculation | $96 ÷ $250,000 | $41,472 ÷ $250,000 |
+| Incidents Needed Per Year | 0.000384 | 0.165888 |
+| Years Between Incidents | 2,604 yrs | 6 yrs |
 
 > **How to read this table:**
-> The pipeline at the 1,000-sensor scale breaks even if it prevents
-> just 0.166 incidents per year — meaning one incident every 6 years.
-> Manufacturing plants typically experience multiple equipment failures
-> per year, making this threshold trivially easy to exceed.
+> The production pipeline breaks even if it prevents just
+> 0.166 incidents per year — meaning one incident every 6 years.
+> Manufacturing plants typically experience multiple equipment
+> failures per year, making this threshold trivially easy to exceed.
 
 ---
 
@@ -312,12 +256,11 @@ Dev           : 1 / 0.000384  = 2,604 years between incidents
 > relative to the cost of the disaster it prevents that
 > the only question is why you would NOT have one.
 >
-> This pipeline costs **$33/month ($396/year)** in production.
-> It protects against a **$250,000** downtime incident.
->
-> The break-even point is preventing one incident every **631 years.**
-> Manufacturing plants experience equipment failures far more
-> frequently than once every 631 years.
+> This pipeline costs **$3,456/month ($41,472/year)** in production
+> at 1,000 sensors. It protects against a **$250,000** downtime
+> incident. The break-even point is preventing one incident every
+> **6 years.** Manufacturing plants experience equipment failures
+> far more frequently than once every 6 years.
 > **The pipeline pays for itself many times over.**
 
 ---
