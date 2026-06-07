@@ -197,9 +197,18 @@ ROI = (($250,000 - $41,472) / $41,472) × 100
 | 1,000 sensors | $41,472 | $250,000 | $208,528 | **503%** |
 
 > ✅ Even at the most expensive scale (1,000 sensors, $41,472/year),
-> preventing **one** incident returns **503%** — meaning every $1
-> spent returns $6.03 back. The pipeline pays for itself more than
-> five times over from a single prevented incident.
+> preventing **one** incident returns **503%.**
+>
+> ```
+> Dollars returned per $1 spent = (ROI% / 100) + 1
+>                               = (503 / 100) + 1
+>                               = 5.03 + 1
+>                               = $6.03
+> ```
+>
+> Every $1 invested in the pipeline returns $6.03 back.
+> The pipeline pays for itself more than five times over
+> from a single prevented incident.
 
 ---
 
@@ -222,10 +231,6 @@ Example: ROI = 63,030%
   = 630.3 + 1
   = $631.30 returned for every $1 spent
 ```
-
-> This is where the "631x" figure in earlier versions of this
-> document came from. It is now replaced with the clearer ROI %
-> format so the math is fully transparent.
 
 ---
 
