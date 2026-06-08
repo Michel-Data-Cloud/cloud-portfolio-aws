@@ -83,7 +83,7 @@ entirely. This pipeline is that detection system.
 > research report. The $250,000 figure represents a conservative
 > mid-range estimate for discrete manufacturing environments.
 > Individual components are itemised above so readers can substitute
-> their own figures for their specific industry and plant size.
+> their own figures. 
 
 ---
 
