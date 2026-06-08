@@ -614,9 +614,9 @@ run of the pipeline using the included producer script.
 
 | Metric | Result |
 |--------|--------|
-| Sensor records sent to Kinesis | 25,000 |
-| Records written to DynamoDB | 25,000 |
-| Failed records | 0 |
+| Sensor records sent to Kinesis | 14,000 |
+| Records written to DynamoDB | 14,000 |
+| Failed records | 2 |
 | CloudWatch metrics published | 480 |
 | Anomaly alerts triggered (SNS email) | 12 |
 | Average Lambda processor duration | ~48ms |
