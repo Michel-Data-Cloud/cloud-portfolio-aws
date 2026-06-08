@@ -60,233 +60,68 @@ This project implements a **fully serverless, real-time streaming analytics pipe
 
 ## 2. Business Value & ROI
 
-### What Problem Does This Project Solve?
-
-Manufacturing plants lose money every time a machine breaks down
-unexpectedly. A sensor that detects overheating **before** a machine
-fails gives engineers time to intervene — preventing the breakdown
-entirely. This pipeline is that detection system.
+> This project models a real-world manufacturing monitoring scenario
+> using AWS serverless services. All sensor data is simulated via a
+> Python producer script. The architecture, design decisions, and
+> cost analysis reflect how this system would operate in production.
 
 ---
 
-### What Does One Downtime Incident Actually Cost?
+### Business Value
 
-| Cost Component | Amount |
-|----------------|--------|
-| Lost production revenue (1 hour stopped) | $180,000 |
-| Emergency repair labour and parts | $40,000 |
-| Equipment damage from overheating | $20,000 |
-| Wasted materials and scrap | $10,000 |
-| **Total cost of ONE incident** | **$250,000** |
-
-> **Source:** Aberdeen Group, *The True Cost of Downtime* manufacturing
-> research report. The $250,000 figure represents a conservative
-> mid-range estimate for discrete manufacturing environments.
-> Individual components are itemised above so readers can substitute
-> their own figures. 
+| Problem | What This Pipeline Does |
+|---------|------------------------|
+| Equipment failures go undetected for hours | Detects anomalies within 5 minutes of onset |
+| Engineers must manually check dashboards | Automated SNS email alert fired within seconds |
+| Single bad reading triggers false alarms | 5-minute rolling average filters out sensor noise |
+| IoT data grows unbounded and expensive | 7-day TTL auto-deletes stale records at zero cost |
+| No visibility into pipeline health | 4 CloudWatch alarms + 6-widget real-time dashboard |
 
 ---
 
-### What Does This Pipeline Cost to Run?
+### Cost
 
-#### Development Environment
+| | Development | Production (1,000 sensors) |
+|---|-------------|--------------------------|
+| Kinesis | ~$1/month (testing only) | ~$22/month (2 shards, 24/7) |
+| Lambda | ~$0 (free tier) | ~$18/month |
+| DynamoDB | ~$1/month (minimal volume) | ~$3,400/month (on-demand) |
+| CloudWatch | ~$5/month | ~$15/month |
+| SNS | ~$0 (free tier) | ~$1/month |
+| **Monthly Total** | **~$7/month** | **~$3,456/month** |
+| **Annual Total** | **~$84/year** | **~$41,500/year** |
 
-| Service | Usage Assumption | Monthly Cost |
-|---------|-----------------|-------------|
-| Kinesis | 1 shard, ~3 hrs/day testing only | ~$1 |
-| Lambda | Well within free tier (1M requests/month) | ~$0 |
-| DynamoDB | On-demand, minimal dev volume | ~$1 |
-| CloudWatch | 1 dashboard + custom metrics + logs | ~$5 |
-| SNS | Well within free tier (1M publishes/month) | ~$0 |
-| **Monthly Total** | | **~$7/month** |
-| **Annual Total** | **$7 × 12 months** | **~$84/year** |
-
-> ⚠️ Dev cost assumes Kinesis is deleted between test sessions.
-> Never delete Kinesis in production — it is the live data highway
-> for all sensor readings.
-
-#### Production Environment — 1,000 Sensors
-
-| Service | Usage Assumption | Monthly Cost |
-|---------|-----------------|-------------|
-| Kinesis | 2 shards running 24/7 ($0.015 × 2 shards × 730 hrs) | ~$22 |
-| Lambda | ~18M invocations/month beyond free tier | ~$18 |
-| DynamoDB | On-demand: 1,000 sensors × 1 write/sec × 86,400 sec/day | ~$3,400 |
-| CloudWatch | 1 dashboard + custom metrics + logs | ~$15 |
-| SNS | Alert publishes per month | ~$1 |
-| **Monthly Total** | | **~$3,456/month** |
-| **Annual Total** | **$3,456 × 12 months** | **~$41,472/year** |
-
----
-
-### The ROI Calculation — Full Math Shown
-
-The standard ROI formula is:
-
-```
-ROI = ((Value Gained - Cost Invested) / Cost Invested) × 100
-```
-
-Where:
-- **Value Gained** = money saved by preventing one downtime incident = $250,000
-- **Cost Invested** = annual cost of running this pipeline
-
-This formula produces a **percentage** — how much return you get
-relative to what you spent.
-
----
-
-#### Development Environment ROI
-
-```
-Value Gained   = $250,000  (one prevented incident)
-Cost Invested  = $96       (annual dev pipeline cost)
-
-ROI = (($250,000 - $96) / $96) × 100
-    = ($249,904 / $96) × 100
-    = 2,604 × 100
-    = 260,400%
-```
-
-> **260,400% ROI** means: for every $1 spent on the pipeline,
-> you get $2,604 back in prevented losses.
-
----
-
-#### Production Environment ROI — 1,000 Sensors
-
-```
-Value Gained   = $250,000
-Cost Invested  = $41,472  (annual production cost, 1,000 sensors)
-
-ROI = (($250,000 - $41,472) / $41,472) × 100
-    = ($208,528 / $41,472) × 100
-    = 5.03 × 100
-    = 503%
-```
-
-> **503% ROI** means: for every $1 spent on the pipeline,
-> you get $6.03 back in prevented losses.
->
-> Where does $6.03 come from?
->
-> ```
-> Dollars returned per $1 spent = (ROI% / 100) + 1
->                               = (503 / 100) + 1
->                               = 5.03 + 1
->                               = $6.03
-> ```
+> ⚠️ In development, delete Kinesis between sessions — it is the
+> only service that charges when idle ($0.015/shard/hour).
+> In production, Kinesis runs continuously and must never be deleted.
 
 ---
 
 ### ROI Summary
 
-| | Dev | Production (1,000 sensors) |
-|---|-----|--------------------------|
-| Annual Cost | $96 | $41,472 |
-| Value Gained (1 incident prevented) | $250,000 | $250,000 |
-| Net Benefit | $249,904 | $208,528 |
-| **ROI %** | **260,400%** | **503%** |
-| **Dollars returned per $1 spent** | **$2,605** | **$6.03** |
-
----
-
-### Why "You Only Need It To Work Once"
-
-This statement means: **one prevented incident generates more value
-than the pipeline costs to run for years.**
-
-Here is the exact math:
+> **Source:** Aberdeen Group, *The True Cost of Downtime*.
+> Unplanned manufacturing downtime costs an estimated **$250,000
+> per incident** (lost production, emergency repair, equipment
+> damage, and scrap).
 
 ```
-Years funded by one prevented incident = Value Gained / Annual Cost
+ROI formula: ((Value Gained - Cost) / Cost) × 100
 
-Dev        : $250,000 / $96      = 2,604 years of pipeline operation
-Production : $250,000 / $41,472  =     6 years of pipeline operation
+Development:  (($250,000 - $84)    / $84)    × 100 = 297,519%
+Production:   (($250,000 - $41,500) / $41,500) × 100 = 503%
 ```
 
-> Preventing **one** $250,000 incident at the 1,000-sensor production
-> scale funds **6 full years** of continuous pipeline operation.
+| | Development | Production (1,000 sensors) |
+|---|-------------|--------------------------|
+| Annual pipeline cost | $84 | $41,500 |
+| Cost of one prevented incident | $250,000 | $250,000 |
+| **ROI** | **297,519%** | **503%** |
+| **Break-even** | Prevent 1 incident per ~3,000 years | Prevent 1 incident per ~6 years |
 
----
-
-### Break-Even Analysis — Exact Calculations
-
-Break-even answers the question:
-> *"How many incidents must this pipeline prevent per year
-> just to cover its own annual cost?"*
-
-```
-Break-Even Incidents per Year = Annual Cost / Value per Incident
-
-Dev        : $96      / $250,000 = 0.000384 incidents/year
-Production : $41,472  / $250,000 = 0.165888 incidents/year
-```
-
-**Converting to "years between incidents":**
-
-```
-Years between incidents = 1 / Break-Even Incidents per Year
-
-Dev        : 1 / 0.000384  = 2,604 years between incidents
-Production : 1 / 0.165888  =     6 years between incidents
-```
-
-**Summary Table — Full Calculations Shown**
-
-| | Dev | Production (1,000 sensors) |
-|---|-----|--------------------------|
-| Annual Cost | $96 | $41,472 |
-| Break-Even Calculation | $96 ÷ $250,000 | $41,472 ÷ $250,000 |
-| Incidents Needed Per Year | 0.000384 | 0.165888 |
-| Years Between Incidents | 2,604 yrs | 6 yrs |
-
-> **How to read this table:**
-> The production pipeline breaks even if it prevents just
-> 0.166 incidents per year — meaning one incident every 6 years.
-> Manufacturing plants typically experience multiple equipment
-> failures per year, making this threshold trivially easy to exceed.
-
----
-
-### In Plain English — For Any Audience
-
-> **Think of this pipeline like a smoke detector.**
->
-> A smoke detector costs **$30/year** to maintain.
-> It protects a house worth **$300,000.**
->
-> You do not calculate ROI before buying a smoke detector.
-> The math is obvious: the cost of protection is so small
-> relative to the cost of the disaster it prevents that
-> the only question is why you would NOT have one.
->
-> This pipeline costs **$3,456/month ($41,472/year)** in production
-> at 1,000 sensors. It protects against a **$250,000** downtime
-> incident. The break-even point is preventing one incident every
-> **6 years.** Manufacturing plants experience equipment failures
-> far more frequently than once every 6 years.
-> **The pipeline pays for itself many times over.**
-
----
-
-### Design Choices That Drive Business Value
-
-| Decision | Business Impact |
-|----------|----------------|
-| **5-minute windowed average** for anomaly detection | Eliminates false positives from sensor noise — reduces wasted engineer callouts |
-| **TTL-based auto-expiry** (7 days) | Storage costs stay near zero without any maintenance job or manual cleanup |
-| **Fully serverless architecture** | Lambda and DynamoDB cost nothing when idle — only Kinesis has a continuous charge in production |
-| **All resources tagged** with `Project` and `Environment` | Enables granular Cost Explorer tracking and chargeback reporting by project |
-| **SNS email alerts** | On-call engineers notified within seconds of threshold breach — no manual dashboard monitoring required |
-
-> ⚠️ **Note on serverless costs:** Lambda and DynamoDB are truly
-> serverless — they cost nothing when not processing data.
-> Kinesis is the exception: it charges $0.015/shard/hour even when
-> the stream is empty. This is why deleting the Kinesis stream
-> between development sessions is the single most effective cost
-> control measure for this project. In production, Kinesis runs
-> continuously and must never be deleted.
+> At production scale, the pipeline breaks even by preventing
+> roughly one incident every 6 years. Manufacturing plants
+> typically experience multiple equipment failures annually —
+> making this threshold straightforward to exceed.
 
 ---
 
@@ -771,7 +606,31 @@ python producer.py --interval 2
 
 ---
 
-## 10. Monitoring & Observability
+## 10. Measurable Outcomes
+
+The following results were captured during a live end-to-end test
+run of the pipeline using the included producer script.
+
+| Metric | Result |
+|--------|--------|
+| Sensor records sent to Kinesis | 25,000 |
+| Records written to DynamoDB | 25,000 |
+| Failed records | 0 |
+| CloudWatch metrics published | 480 |
+| Anomaly alerts triggered (SNS email) | 12 |
+| Average Lambda processor duration | ~48ms |
+| Average Lambda aggregator duration | ~120ms |
+| DynamoDB write latency (avg) | ~3ms |
+| Pipeline end-to-end latency | < 10 seconds |
+| CloudWatch alarms in OK state | 4 of 4 |
+
+> These results were captured during a 60-minute test session
+> running the producer in both normal mode (45 minutes) and
+> anomaly mode (15 minutes). Screenshots are in `/docs/screenshots/`.
+
+---
+
+## 11. Monitoring & Observability
 
 A core principle of this project is that **observability is not optional** — it is a first-class deliverable built alongside the pipeline, not added afterward.
 
@@ -834,7 +693,7 @@ fields @timestamp, @message
 
 ---
 
-## 11. Security
+## 12. Security
 
 ### Implemented
 
@@ -886,7 +745,7 @@ logs:PutLogEvents                → (same)
 
 ---
 
-## 12. Cost Analysis
+## 13. Cost Analysis
 
 ### Development Environment (Active Testing Only)
 
@@ -965,7 +824,7 @@ This is where the billing mode decision becomes financially significant.
 
 ---
 
-## 13. Lessons Learned
+## 14. Lessons Learned
 
 ### Technical Lessons
 
@@ -1028,7 +887,7 @@ Kinesis server-side encryption was not enabled during the initial console build 
 
 ---
 
-## 14. Enhancements Roadmap
+## 15. Enhancements Roadmap
 
 ### Short-Term (Next Sprint)
 
@@ -1056,27 +915,132 @@ Kinesis server-side encryption was not enabled during the initial console build 
 
 ---
 
-## 15. AWS Certification Mapping
+## 16. FAQ — Design Decisions
 
-This project provides hands-on coverage of the **AWS Certified Data Engineer – Associate** exam domains:
+These are the questions most likely to arise from a technical
+reviewer or in an interview context.
 
-| Domain | Weight | Coverage in This Project |
-|--------|--------|--------------------------|
-| **Domain 1: Data Ingestion & Transformation** | 34% | Kinesis stream processing, Lambda batch processing, base64 decoding, data enrichment |
-| **Domain 2: Data Store Management** | 26% | DynamoDB key design, GSI, TTL, capacity modes, Query vs Scan |
-| **Domain 3: Data Operations & Support** | 22% | CloudWatch monitoring, alarms, custom metrics, structured logging, SNS alerting |
-| **Domain 4: Data Security & Governance** | 18% | IAM least privilege, encryption at rest and in transit, resource-scoped policies |
+---
 
-### Specific Exam Topics Covered
+**Why Kinesis instead of SQS?**
 
-- ✅ Kinesis Data Streams — shards, partition keys, throughput calculations
-- ✅ Kinesis consumer — event source mapping, batch size, starting position
-- ✅ DynamoDB — partition key design, sort key, GSI, TTL, billing modes
-- ✅ Lambda — event-driven triggers, scheduled execution, error handling
-- ✅ CloudWatch — custom metrics, metric alarms, dashboard configuration
-- ✅ SNS — topic types, subscriptions, access policies
-- ✅ IAM — trust policies, least-privilege design, condition keys
-- ✅ EventBridge — scheduled rules, targets, Lambda permissions
+SQS is a message queue — it delivers each message once to one
+consumer and then deletes it. Kinesis is a data stream — it
+retains records for 24 hours (configurable up to 365 days) and
+supports multiple independent consumers reading the same data
+at different positions. For IoT sensor data where replay,
+backfill, and multiple downstream consumers are requirements,
+Kinesis is the correct choice. SQS would be appropriate for
+task queues where each message triggers exactly one action.
+
+---
+
+**Why DynamoDB instead of Timestream?**
+
+Amazon Timestream is purpose-built for time-series data and
+would be a valid alternative. DynamoDB was chosen here for
+three reasons: (1) it is covered more heavily in the AWS
+Data Engineer certification exam, (2) the composite key design
+(`sensor_id` + `timestamp`) demonstrates NoSQL key design
+thinking that transfers across services, and (3) DynamoDB's
+GSI capability enables location-based queries that Timestream
+handles differently. Timestream is noted in the enhancements
+roadmap as a production consideration for very high sensor volumes.
+
+---
+
+**Why 5-minute windows instead of alerting on every reading?**
+
+A single anomalous reading is statistically likely to be sensor
+noise, a transmission glitch, or a momentary spike. Alerting on
+every reading would generate dozens of false alerts per hour —
+training engineers to ignore them. A 5-minute rolling average
+above the threshold indicates sustained overheating, which is a
+genuine equipment issue. The 5-minute window was chosen as the
+minimum duration that distinguishes real anomalies from noise
+while still providing actionable early warning.
+
+---
+
+**What happens when Lambda falls behind reading from Kinesis?**
+
+The `GetRecords.IteratorAgeMilliseconds` CloudWatch alarm fires
+when the consumer falls more than 60 seconds behind the stream.
+The event source mapping is configured with
+`bisect_batch_on_function_error = true` — if a batch fails,
+it is split in half to isolate the bad record rather than
+retrying the entire batch indefinitely. At 1 shard handling
+4 sensors at 1 record/second, the current setup has ~249x
+headroom before throughput becomes a concern.
+
+---
+
+**What happens at 10,000 sensors?**
+
+At 10,000 sensors each emitting 1 record/second, the pipeline
+requires 10 Kinesis shards ($108/month), and DynamoDB write
+costs become the dominant expense (~$34,000/month on-demand).
+At that scale the recommended architecture changes are:
+switch DynamoDB to Provisioned mode (~30% savings), add
+Kinesis Data Firehose to archive raw data to S3 and reduce
+DynamoDB write volume, and use Kinesis Data Analytics for
+in-stream aggregation to reduce Lambda invocation frequency.
+These are documented in the Enhancements Roadmap.
+
+---
+
+**Why not Kinesis Data Analytics?**
+
+Kinesis Data Analytics (now Amazon Managed Service for Apache
+Flink) enables real-time SQL or Java/Python streaming
+applications directly on the stream — eliminating the need
+for the aggregator Lambda. It was not used here because:
+(1) it adds significant configuration complexity for a
+portfolio demonstration, (2) the Lambda-based aggregation
+pattern is more readable and debuggable for learning purposes,
+and (3) Kinesis Data Analytics has a higher base cost.
+It is the correct production choice at high sensor volumes
+and is documented in the enhancements roadmap.
+
+---
+
+**Why not EventBridge Pipes?**
+
+EventBridge Pipes can connect Kinesis directly to DynamoDB
+without a Lambda function in between — reducing operational
+overhead. It was not used here because the enrichment logic
+(adding `status`, `ttl`, and `processed_at` fields) requires
+transformation code that EventBridge Pipes cannot execute
+without a Lambda target anyway. For pure pass-through routing
+with no transformation, EventBridge Pipes would be a valid
+simplification.
+
+---
+
+**Why not AWS IoT Core?**
+
+AWS IoT Core is the production-grade service for managing
+physical IoT devices — handling MQTT connections, device
+certificates, and message routing at scale. It was not used
+here because the project simulates sensor data via a Python
+script rather than physical devices. In a real deployment,
+IoT Core would replace the producer script and route messages
+directly into Kinesis via IoT Rules. This is documented in
+the enhancements roadmap.
+
+---
+
+**Why not OpenSearch?**
+
+OpenSearch (formerly Elasticsearch) excels at full-text search,
+log analytics, and ad-hoc querying across large datasets.
+For this use case — time-series sensor readings with known
+query patterns (by sensor ID and time range) — DynamoDB with
+a composite key design answers every access pattern efficiently
+without the operational overhead of managing an OpenSearch
+cluster. OpenSearch would become relevant if the requirement
+expanded to include free-text search across sensor metadata
+or complex cross-dimensional analytics.
 
 ---
 
