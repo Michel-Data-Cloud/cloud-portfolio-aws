@@ -23,12 +23,13 @@
 7. [Repository Structure](#7-repository-structure)
 8. [Infrastructure as Code — Terraform](#8-infrastructure-as-code--terraform)
 9. [How to Run Locally](#9-how-to-run-locally)
-10. [Monitoring & Observability](#10-monitoring--observability)
-11. [Security](#11-security)
-12. [Cost Analysis](#12-cost-analysis)
-13. [Lessons Learned](#13-lessons-learned)
-14. [Enhancements Roadmap](#14-enhancements-roadmap)
-15. [AWS Certification Mapping](#15-aws-certification-mapping)
+10. [Measurable Outcomes](#10-measurable--outcomes)
+11. [Monitoring and Observability](#11-monitoring-and-observability)
+12. [Security](#11-security)
+13. [Cost Analysis](#12-cost-analysis)
+14. [Lessons Learned](#13-lessons-learned)
+15. [Enhancements Roadmap](#14-enhancements-roadmap)
+16. [16. FAQ — Design Decisions](#16-FAQ-Design-Decisions)
 
 ---
 
@@ -626,7 +627,7 @@ run of the pipeline using the included producer script.
 
 > These results were captured during a 60-minute test session
 > running the producer in both normal mode (45 minutes) and
-> anomaly mode (15 minutes). Screenshots are in `/docs/screenshots/`.
+> anomaly mode (15 minutes).
 
 ---
 
