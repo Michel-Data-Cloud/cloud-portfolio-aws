@@ -45,14 +45,17 @@ htmlcov/
 *.tfstate.*
 *.tfstate.backup
 .terraform/
-.terraform.lock.hcl
 terraform.tfvars
+*.tfvars
+*.tfvars.json
 override.tf
 override.tf.json
 *_override.tf
 *_override.tf.json
 crash.log
 crash.*.log
+*.tfplan
+tfplan*
 
 # ========================================
 # AWS
@@ -77,6 +80,13 @@ crash.*.log
 .DS_Store
 Thumbs.db
 *.bak
+
+# OS — additional
+._*
+Thumbs.db:encryptable
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
 
 # ========================================
 # Project-Specific

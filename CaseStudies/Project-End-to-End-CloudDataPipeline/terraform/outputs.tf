@@ -1,145 +1,94 @@
 ################################################################################
-# OUTPUTS FOR PROJECT1 DECEMBER 2025 BASELINE
+# PROJECT 1 — END-TO-END AWS DATA PIPELINE
+# Terraform Outputs
 ################################################################################
 
-################################################################################
-# S3 BUCKET OUTPUTS
-################################################################################
+# --- Account & Region ---
 
-output "raw_data_bucket_name" {
-  description = "Name of the S3 bucket storing raw input data"
+output "aws_account_id" {
+  description = "AWS account ID where resources are deployed"
+  value       = var.aws_account_id
+}
+
+output "aws_region" {
+  description = "AWS region where resources are deployed"
+  value       = var.aws_region
+}
+
+# --- S3 Buckets ---
+
+output "s3_bucket_raw_data" {
+  description = "S3 bucket for raw input data (CSV, JSON)"
   value       = aws_s3_bucket.raw_data.id
 }
 
-output "raw_data_bucket_arn" {
-  description = "ARN of the raw data S3 bucket"
-  value       = aws_s3_bucket.raw_data.arn
-}
-
-output "processed_data_bucket_name" {
-  description = "Name of the S3 bucket storing processed data"
+output "s3_bucket_processed_data" {
+  description = "S3 bucket for processed/enriched Parquet data"
   value       = aws_s3_bucket.processed_data.id
 }
 
-output "processed_data_bucket_arn" {
-  description = "ARN of the processed data S3 bucket"
-  value       = aws_s3_bucket.processed_data.arn
-}
-
-output "glue_scripts_bucket_name" {
-  description = "Name of the S3 bucket storing Glue scripts"
+output "s3_bucket_glue_scripts" {
+  description = "S3 bucket for Glue ETL scripts"
   value       = aws_s3_bucket.glue_scripts.id
 }
 
-output "athena_results_bucket_name" {
-  description = "Name of the S3 bucket storing Athena query results"
+output "s3_bucket_athena_results" {
+  description = "S3 bucket for Athena query results"
   value       = aws_s3_bucket.athena_results.id
 }
 
-output "glue_assets_bucket_name" {
-  description = "Name of the AWS-managed Glue assets bucket"
+output "s3_bucket_glue_assets" {
+  description = "AWS-managed S3 bucket for Glue temporary files and Spark logs"
   value       = aws_s3_bucket.glue_assets.id
 }
 
-################################################################################
-# GLUE DATABASE OUTPUTS
-################################################################################
+# --- Glue Resources ---
 
-output "raw_database_name" {
-  description = "Name of the Glue database for raw data"
+output "glue_database_raw" {
+  description = "Glue Data Catalog database for raw data"
   value       = aws_glue_catalog_database.sales_pipeline_db.name
 }
 
-output "raw_database_location" {
-  description = "S3 location of the raw data database"
-  value       = aws_glue_catalog_database.sales_pipeline_db.location_uri
-}
-
-output "analytics_database_name" {
-  description = "Name of the Glue database for analytics"
+output "glue_database_analytics" {
+  description = "Glue Data Catalog database for processed analytics data"
   value       = aws_glue_catalog_database.sales_analytics_db.name
 }
 
-output "analytics_database_location" {
-  description = "S3 location of the analytics database"
-  value       = aws_glue_catalog_database.sales_analytics_db.location_uri
-}
-
-################################################################################
-# GLUE CRAWLER OUTPUTS
-################################################################################
-
-output "crawler_name" {
-  description = "Name of the Glue crawler"
+output "glue_crawler_name" {
+  description = "Glue crawler that discovers schema from raw S3 data"
   value       = aws_glue_crawler.sales_data_crawler.name
 }
 
-output "crawler_arn" {
-  description = "ARN of the Glue crawler"
-  value       = aws_glue_crawler.sales_data_crawler.arn
+output "glue_job_name" {
+  description = "Glue ETL job that transforms and enriches sales data"
+  value       = aws_glue_job.project1_etl_pipeline.name
 }
 
-################################################################################
-# GLUE JOB OUTPUTS
-################################################################################
+# --- IAM ---
 
-output "etl_job_name" {
-  description = "Name of the Glue ETL job"
-  value       = aws_glue_job.sales_etl_pipeline.name
-}
-
-output "etl_job_arn" {
-  description = "ARN of the Glue ETL job"
-  value       = aws_glue_job.sales_etl_pipeline.arn
-}
-
-output "etl_job_script_location" {
-  description = "S3 location of the ETL job script"
-  value       = aws_glue_job.sales_etl_pipeline.command[0].script_location
-}
-
-################################################################################
-# IAM ROLE OUTPUTS
-################################################################################
-
-output "glue_role_name" {
-  description = "Name of the IAM role for Glue"
+output "iam_role_name" {
+  description = "IAM role name used by Glue crawler and ETL job"
   value       = aws_iam_role.glue_service_role.name
 }
 
-output "glue_role_arn" {
-  description = "ARN of the IAM role for Glue"
-  value       = aws_iam_role.glue_service_role.arn
+# --- Monitoring ---
+
+output "sns_topic_arn" {
+  description = "SNS topic ARN for pipeline failure alerts"
+  value       = aws_sns_topic.pipeline_alerts.arn
 }
 
-################################################################################
-# GLUE TABLE OUTPUTS
-################################################################################
-
-output "enriched_sales_table" {
-  description = "Name of the enriched sales table"
-  value       = aws_glue_catalog_table.enriched_sales.name
+output "eventbridge_rule_job_failure" {
+  description = "EventBridge rule that detects Glue job FAILED or TIMEOUT states"
+  value       = aws_cloudwatch_event_rule.glue_job_failures.name
 }
 
-output "sales_summary_table" {
-  description = "Name of the sales summary table"
-  value       = aws_glue_catalog_table.sales_summary.name
+output "cloudwatch_alarm_job_duration" {
+  description = "CloudWatch alarm that fires when Glue job duration exceeds 10 minutes"
+  value       = aws_cloudwatch_metric_alarm.glue_job_duration.alarm_name
 }
 
-################################################################################
-# SUMMARY OUTPUT
-################################################################################
-
-output "infrastructure_summary" {
-  description = "Summary of the December 2025 baseline infrastructure"
-  value = {
-    region              = var.aws_region
-    s3_buckets          = 5
-    glue_databases      = 2
-    glue_crawlers       = 1
-    glue_jobs           = 1
-    glue_tables_defined = 2
-    iam_roles           = 1
-    baseline_date       = var.baseline_date
-  }
+output "eventbridge_rule_crawler_failure" {
+  description = "EventBridge rule that detects Glue crawler Failed state"
+  value       = aws_cloudwatch_event_rule.glue_crawler_failures.name
 }
