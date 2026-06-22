@@ -44,7 +44,7 @@
 | ✅ **IaC — Terraform** | 9 `.tf` files, ~600 lines, deploys full stack with `terraform apply` |
 | ✅ **Monitoring + Observability** | 4 alarms + 6-widget dashboard + structured logs + Logs Insights queries |
 | ✅ **Security Thinking** | Least-privilege IAM, encryption everywhere, production enhancements documented |
-| ✅ **Documentation Quality** | 15-section README, decision justifications, lessons learned, cost analysis |
+| ✅ **Documentation Quality** | 16-section README, decision justifications, lessons learned, cost analysis |
 
 ---
 
