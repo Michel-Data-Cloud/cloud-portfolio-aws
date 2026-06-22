@@ -45,7 +45,7 @@
 | ✅ **IaC — Terraform** | Single `main.tf` with 24 resources, full pipeline deployable with `terraform apply` |
 | ✅ **Monitoring + Observability** | 3 alarms (job failure, job duration, crawler failure) + SNS email alerts + CloudWatch Logs Insights queries |
 | ✅ **Security Thinking** | Least-privilege custom IAM policy, bucket policies enforcing encryption + HTTPS, versioning on critical buckets, production enhancements documented |
-| ✅ **Documentation Quality** | 15-section README, decision justifications, lessons learned, cost analysis at 3 scales |
+| ✅ **Documentation Quality** | 16-section README, decision justifications, lessons learned, cost analysis at 3 scales |
 
 ---
 
