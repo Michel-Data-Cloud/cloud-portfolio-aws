@@ -29,7 +29,22 @@
 13. [Cost Analysis](#12-cost-analysis)
 14. [Lessons Learned](#13-lessons-learned)
 15. [Enhancements Roadmap](#14-enhancements-roadmap)
-16. [16. FAQ — Design Decisions](#16-FAQ-Design-Decisions)
+16. [FAQ — Design Decisions](#16-FAQ-Design-Decisions)
+
+---
+
+## 🏛️ Portfolio 8-Pillar Summary
+
+| Pillar | Evidence |
+|--------|---------|
+| ✅ **Real Business Problem** | Manufacturing plant IoT overheating detection — quantified downtime risk |
+| ✅ **Business Value & ROI** | $250K+ downtime prevention vs $4–8/month pipeline cost documented ($250,000 downtime cost sourced from Aberdeen Group. Full calculation in Section 2.)|
+| ✅ **AWS Well-Architected** | All 6 framework pillars addressed with specific implementation evidence |
+| ✅ **Architecture Diagrams** | Professional AWS icon diagram built in draw.io, diagram embedded in README |
+| ✅ **IaC — Terraform** | 9 `.tf` files, ~600 lines, deploys full stack with `terraform apply` |
+| ✅ **Monitoring + Observability** | 4 alarms + 6-widget dashboard + structured logs + Logs Insights queries |
+| ✅ **Security Thinking** | Least-privilege IAM, encryption everywhere, production enhancements documented |
+| ✅ **Documentation Quality** | 15-section README, decision justifications, lessons learned, cost analysis |
 
 ---
 
@@ -1045,20 +1060,12 @@ or complex cross-dimensional analytics.
 
 ---
 
-## 🏛️ Portfolio 8-Pillar Summary
+## 📧 Contact
 
-| Pillar | Evidence |
-|--------|---------|
-| ✅ **Real Business Problem** | Manufacturing plant IoT overheating detection — quantified downtime risk |
-| ✅ **Business Value & ROI** | $250K+ downtime prevention vs $4–8/month pipeline cost documented ($250,000 downtime cost sourced from Aberdeen Group. Full calculation in Section 2.)|
-| ✅ **AWS Well-Architected** | All 6 framework pillars addressed with specific implementation evidence |
-| ✅ **Architecture Diagrams** | Professional AWS icon diagram built in draw.io, diagram embedded in README |
-| ✅ **IaC — Terraform** | 9 `.tf` files, ~600 lines, deploys full stack with `terraform apply` |
-| ✅ **Monitoring + Observability** | 4 alarms + 6-widget dashboard + structured logs + Logs Insights queries |
-| ✅ **Security Thinking** | Least-privilege IAM, encryption everywhere, production enhancements documented |
-| ✅ **Documentation Quality** | 15-section README, decision justifications, lessons learned, cost analysis |
+**Author: Michel Hidalgo** — Cloud Data Engineer
+💼 [LinkedIn](https://www.linkedin.com/in/michel-hidalgo-46058921/)
+🐙 [GitHub](https://github.com/Michel-Data-Cloud/cloud-portfolio-aws)
 
 ---
 
-*Deployed in `us-east-1`. All infrastructure defined as code in Terraform.*
-*Author: Michel Hidalgo | https://www.linkedin.com/in/michel-hidalgo-46058921/ | https://github.com/Michel-Data-Cloud/cloud-portfolio-aws*
+**Built to demonstrate cloud data engineering expertise and AWS Well-Architected thinking.**
