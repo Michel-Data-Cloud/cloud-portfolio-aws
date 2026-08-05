@@ -47,7 +47,7 @@ terraform.tfvars
 # Terraform working directory — downloaded provider binaries (~100MB+)
 # Recreated automatically by: terraform init
 .terraform/
-.terraform.lock.hcl
+# .terraform.lock.hcl
 
 # Terraform crash logs
 crash.log
