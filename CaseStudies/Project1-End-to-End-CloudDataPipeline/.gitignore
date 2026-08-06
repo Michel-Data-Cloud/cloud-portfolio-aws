@@ -93,3 +93,8 @@ $RECYCLE.BIN/
 # ========================================
 project-structure.txt
 test_reports/
+
+# Data files
+*.csv
+
+
